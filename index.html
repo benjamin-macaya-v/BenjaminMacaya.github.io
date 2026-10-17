@@ -1,6 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Benjamín Macaya</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+  <span>Benjamín Macaya</span>
+  <a href="#about">MORE ↗</a>
 </header>
 
-<div class="section-head" id="work">
+<div class="section-head">
   <span>SELECTED EXPERIMENTS</span>
   <span>001 — 004</span>
 </div>
@@ -25,187 +40,21 @@
 <section class="about reveal" id="about">
   <div class="eyebrow">A LITTLE ABOUT ME</div>
   <h2>CURIOUS<br>BY NATURE.<br>CREATIVE BY<br>DEFAULT.</h2>
+
   <p>
-    Soy un artista digital explorando el diseño,
-    la experimentación visual y las posibilidades
-    creativas de internet.
+    .
   </p>
-  <a href="mailto:TUEMAIL@ejemplo.com">HABLEMOS ↗</a>
+
+  <a href="gmail.com">HABLEMOS ↗</a>
 </section>
 
 <footer>
-  <span>© 2026 TU NOMBRE</span>
+  <span>© 2026 BENJAMÍN MACAYA</span>
   <a href="#work">BACK TO TOP ↑</a>
-  <span>MADE WITH CURIOSITY.</span>
+  <span>,</span>
 </footer>
 
-<script>
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("visible");
-      observer.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.12 });
+<script src="script.js"></script>
 
-document.querySelectorAll(".reveal").forEach(el => {
-  observer.observe(el);
-});
-const bounds = collage.getBoundingClientRect();
-
-    const x = event.clientX - bounds.left -
-      Number(photo.dataset.offsetX);
-
-    const y = event.clientY - bounds.top -
-      Number(photo.dataset.offsetY);
-
-    photo.style.left = `${x}px`;
-    photo.style.top = `${y}px`;
-
-  });
-
-  function stopDragging() {
-    photo.classList.remove("dragging");
-  }
-
-  photo.addEventListener("pointerup", stopDragging);
-  photo.addEventListener("pointercancel", stopDragging);
-
-});
-  
-/* INTERACTIVE IMAGE COLLAGE */
-
-body {
-  background: #050505;
-  color: #fff;
-  overflow-x: hidden;
-}
-
-.collage {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  min-height: 650px;
-  overflow: hidden;
-  background: #050505;
-  isolation: isolate;
-}
-
-.photo {
-  position: absolute;
-  display: block;
-  object-fit: cover;
-  cursor: grab;
-  user-select: none;
-  -webkit-user-drag: none;
-  touch-action: none;
-  transition: filter 0.3s ease, box-shadow 0.3s ease;
-  will-change: left, top;
-}
-
-.photo:hover {
-  filter: brightness(1.08);
-  box-shadow: 0 15px 45px rgba(0,0,0,.4);
-}
-
-.photo.dragging {
-  cursor: grabbing;
-  transition: none;
-  filter: brightness(1.08);
-}
-
-/* POSICIONES INICIALES */
-
-.photo-1 {
-  width: 17%;
-  height: 38%;
-  left: 12%;
-  top: 28%;
-  z-index: 2;
-}
-
-.photo-2 {
-  width: 19%;
-  height: 42%;
-  left: 32%;
-  top: 18%;
-  z-index: 4;
-}
-
-.photo-3 {
-  width: 14%;
-  height: 32%;
-  left: 53%;
-  top: 35%;
-  z-index: 3;
-}
-
-.photo-4 {
-  width: 17%;
-  height: 38%;
-  left: 68%;
-  top: 20%;
-  z-index: 5;
-}
-
-.photo-5 {
-  width: 16%;
-  height: 34%;
-  left: 23%;
-  top: 55%;
-  z-index: 6;
-}
-
-.photo-6 {
-  width: 15%;
-  height: 32%;
-  left: 48%;
-  top: 60%;
-  z-index: 7;
-}
-
-.photo-7 {
-  width: 14%;
-  height: 30%;
-  left: 76%;
-  top: 53%;
-  z-index: 8;
-}
-
-.photo-8 {
-  width: 12%;
-  height: 27%;
-  left: 7%;
-  top: 58%;
-  z-index: 1;
-}
-
-.collage-label {
-  position: absolute;
-  left: 3%;
-  bottom: 4%;
-  font-size: 10px;
-  letter-spacing: 2px;
-  color: #888;
-  pointer-events: none;
-  z-index: 20;
-}
-
-/* MOBILE */
-
-@media (max-width: 700px) {
-  .collage {
-    min-height: 700px;
-  }
-
-  .photo-1 { width: 35%; height: 25%; left: 7%; top: 17%; }
-  .photo-2 { width: 38%; height: 28%; left: 48%; top: 12%; }
-  .photo-3 { width: 30%; height: 23%; left: 35%; top: 43%; }
-  .photo-4 { width: 35%; height: 25%; left: 58%; top: 36%; }
-  .photo-5 { width: 32%; height: 23%; left: 8%; top: 55%; }
-  .photo-6 { width: 30%; height: 22%; left: 53%; top: 68%; }
-  .photo-7 { width: 28%; height: 20%; left: 5%; top: 78%; }
-  .photo-8 { width: 28%; height: 20%; left: 35%; top: 23%; }
-}
+</body>
 </html>
