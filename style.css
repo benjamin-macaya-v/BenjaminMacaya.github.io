@@ -1,22 +1,54 @@
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: #050505;
   color: white;
   font-family: Arial, sans-serif;
-  overflow: hidden;
+  overflow-x: hidden;
+}
+
+header {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 24px;
+  font-size: 13px;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+a:hover {
+  opacity: 0.5;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 24px;
+  font-size: 12px;
+  position: relative;
+  z-index: 10;
 }
 
 .collage {
   position: relative;
-  width: 100vw;
-  height: 100dvh;
+  width: 100%;
+  height: 100vh;
+  min-height: 650px;
   overflow: hidden;
+  background: #050505;
 }
 
 .photo {
@@ -26,6 +58,7 @@ body {
   object-fit: cover;
   cursor: grab;
   user-select: none;
+  -webkit-user-drag: none;
   touch-action: none;
   transition: filter 0.25s ease;
 }
@@ -37,4 +70,102 @@ body {
 .photo.dragging {
   cursor: grabbing;
   transition: none;
+}
+
+/* Posiciones de las fotografías */
+
+.photo-1 {
+  top: 8%;
+  left: 8%;
+  transform: rotate(-8deg);
+}
+
+.photo-2 {
+  top: 22%;
+  left: 30%;
+  transform: rotate(5deg);
+}
+
+.photo-3 {
+  top: 5%;
+  left: 55%;
+  transform: rotate(-4deg);
+}
+
+.photo-4 {
+  top: 42%;
+  left: 72%;
+  transform: rotate(7deg);
+}
+
+.photo-5 {
+  top: 48%;
+  left: 12%;
+  transform: rotate(4deg);
+}
+
+.photo-6 {
+  top: 55%;
+  left: 42%;
+  transform: rotate(-6deg);
+}
+
+.photo-7 {
+  top: 15%;
+  left: 80%;
+  transform: rotate(3deg);
+}
+
+.photo-8 {
+  top: 68%;
+  left: 58%;
+  transform: rotate(5deg);
+}
+
+.collage-label {
+  position: absolute;
+  bottom: 20px;
+  left: 24px;
+  font-size: 11px;
+  z-index: 10;
+}
+
+.about {
+  min-height: 400px;
+  padding: 80px 24px;
+}
+
+.eyebrow {
+  font-size: 12px;
+}
+
+.about h2 {
+  font-size: 40px;
+}
+
+.about p {
+  margin: 20px 0;
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 24px;
+  font-size: 11px;
+}
+
+@media (max-width: 700px) {
+  .photo {
+    width: 145px;
+    height: 190px;
+  }
+
+  .photo-1 { top: 8%; left: 5%; }
+  .photo-2 { top: 25%; left: 48%; }
+  .photo-3 { top: 42%; left: 8%; }
+  .photo-4 { top: 60%; left: 52%; }
+  .photo-5 { top: 12%; left: 55%; }
+  .photo-6 { top: 65%; left: 5%; }
+  .photo-7 { top: 38%; left: 55%; }
+  .photo-8 { top: 75%; left: 40%; }
 }
