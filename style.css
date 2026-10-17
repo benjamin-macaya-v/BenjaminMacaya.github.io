@@ -1,0 +1,40 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #050505;
+  color: white;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+.portfolio {
+  position: relative;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.photo {
+  position: absolute;
+  width: 220px;
+  height: 280px;
+  object-fit: cover;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  transition: filter 0.25s ease;
+}
+
+.photo:hover {
+  filter: brightness(1.1);
+}
+
+.photo.dragging {
+  cursor: grabbing;
+  transition: none;
+}
