@@ -1,0 +1,59 @@
+</header>
+
+<div class="section-head" id="work">
+  <span>SELECTED EXPERIMENTS</span>
+  <span>001 — 004</span>
+</div>
+
+<main class="grid">
+  <a class="project reveal" href="#about">
+    <div class="art art-one"><strong>Liquid<br>dreams</strong></div>
+    <div class="meta"><span>01 / Liquid Dreams</span><small>3D ART</small></div>
+  </a>
+  <a class="project reveal" href="#about">
+    <div class="art art-two"><strong>Other<br>worlds</strong></div>
+    <div class="meta"><span>02 / Other Worlds</span><small>DIGITAL ART</small></div>
+  </a>
+  <a class="project reveal" href="#about">
+    <div class="art art-three"><strong>Type<br>error</strong></div>
+    <div class="meta"><span>03 / Type Error</span><small>GRAPHIC DESIGN</small></div>
+  </a>
+  <a class="project reveal" href="#about">
+    <div class="art art-four"><strong>Soft<br>chaos</strong></div>
+    <div class="meta"><span>04 / Soft Chaos</span><small>EXPERIMENT</small></div>
+  </a>
+</main>
+
+<section class="about reveal" id="about">
+  <div class="eyebrow">A LITTLE ABOUT ME</div>
+  <h2>CURIOUS<br>BY NATURE.<br>CREATIVE BY<br>DEFAULT.</h2>
+  <p>
+    Soy un artista digital explorando el diseño,
+    la experimentación visual y las posibilidades
+    creativas de internet.
+  </p>
+  <a href="mailto:TUEMAIL@ejemplo.com">HABLEMOS ↗</a>
+</section>
+
+<footer>
+  <span>© 2026 TU NOMBRE</span>
+  <a href="#work">BACK TO TOP ↑</a>
+  <span>MADE WITH CURIOSITY.</span>
+</footer>
+
+<script>
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("visible");
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll(".reveal").forEach(el => {
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
