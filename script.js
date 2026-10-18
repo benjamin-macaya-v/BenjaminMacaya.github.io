@@ -23,31 +23,27 @@ function arrangePhotos() {
   const width = window.innerWidth;
   const height = window.innerHeight;
 
-  const radiusX = width * 0.34;
-  const radiusY = height * 0.34;
-  const radiusZ = 330;
+  const radiusX = Math.min(width * 0.27, 350);
+  const radiusY = Math.min(height * 0.25, 210);
 
   photos.forEach((photo, i) => {
-    const angle = i * 2.39996;
+    const angle = (i / photos.length) * Math.PI * 2;
 
-    const spread = 0.68 + random(i + 1) * 0.55;
+    // Distribución irregular
+    const x = Math.cos(angle) * radiusX
+      + (random(i + 20) - 0.5) * 170;
 
-    const x =
-      Math.cos(angle) * radiusX * spread +
-      (random(i + 20) - 0.5) * 130;
+    const y = Math.sin(angle) * radiusY
+      + (random(i + 40) - 0.5) * 130;
 
-    const y =
-      Math.sin(angle * 1.7) * radiusY * spread +
-      (random(i + 40) - 0.5) * 150;
+    // Profundidad
+    const z = (random(i + 70) - 0.5) * 500;
 
-    const z =
-      (random(i + 70) - 0.5) * radiusZ * 2;
+    // Diferentes tamaños
+    const size = 0.75 + random(i + 100) * 0.65;
 
-    const size = 0.72 + random(i + 100) * 0.65;
-    const tilt = (random(i + 150) - 0.5) * 18;
-    const turn = (random(i + 180) - 0.5) * 14;
-
-    photo.dataset.depth = z;
+    const tilt = (random(i + 150) - 0.5) * 25;
+    const turn = (random(i + 180) - 0.5) * 30;
 
     photo.style.transform = `
       translate(-50%, -50%)
@@ -56,6 +52,10 @@ function arrangePhotos() {
       rotateZ(${tilt}deg)
       scale(${size})
     `;
+
+    photo.style.zIndex = Math.round(z + 500);
+  });
+}
 
     photo.style.zIndex = Math.round(z + 500);
   });
