@@ -147,9 +147,9 @@ function updateWorld() {
 // ==================================
 
 collage.addEventListener("pointerdown", event => {
-  if (event.target.closest(".photo-slot video, .photo-slot img")) {
-    return;
-  }
+  if (event.target.closest(".photo-slot a, .photo-slot video, .photo-slot img")) {
+  return;
+}
 
   if (event.button !== 0) return;
 
