@@ -226,3 +226,84 @@ function animate(timestamp) {
 
 updateWorld();
 requestAnimationFrame(animate);
+
+// ==================================
+// ABRIR VIDEOS Y GIFS
+// ==================================
+
+const lightbox = document.querySelector("#mediaLightbox");
+const lightboxVideo = document.querySelector("#lightboxVideo");
+const lightboxGif = document.querySelector("#lightboxGif");
+const lightboxClose = document.querySelector("#lightboxClose");
+
+// Detectar clic en videos y GIFs de la nube
+photos.forEach(photo => {
+  const media = photo.querySelector("video, img");
+
+  if (!media) return;
+
+  const isGif = media.tagName === "IMG" &&
+                media.src.toLowerCase().split("?")[0].endsWith(".gif");
+
+  const isVideo = media.tagName === "VIDEO";
+
+  if (!isGif && !isVideo) return;
+
+  media.style.pointerEvents = "auto";
+  media.style.cursor = "pointer";
+
+  media.addEventListener("click", () => {
+    lightbox.classList.add("active");
+
+    if (isVideo) {
+      const source = media.querySelector("source");
+
+      lightboxVideo.src = source ? source.src : media.src;
+      lightboxVideo.style.display = "block";
+      lightboxGif.style.display = "none";
+
+      lightboxVideo.muted = false;
+      lightboxVideo.currentTime = 0;
+
+      lightboxVideo.play().catch(error => {
+        console.log("No se pudo reproducir el video:", error);
+      });
+    }
+
+    if (isGif) {
+      lightboxGif.src = media.src;
+      lightboxGif.style.display = "block";
+      lightboxVideo.style.display = "none";
+    }
+  });
+});
+
+// Cerrar la ventana
+function closeLightbox() {
+  lightbox.classList.remove("active");
+
+  lightboxVideo.pause();
+  lightboxVideo.removeAttribute("src");
+  lightboxVideo.load();
+
+  lightboxGif.removeAttribute("src");
+
+  lightboxVideo.style.display = "none";
+  lightboxGif.style.display = "none";
+}
+
+lightboxClose.addEventListener("click", closeLightbox);
+
+// Cerrar al hacer clic fuera del contenido
+lightbox.addEventListener("click", event => {
+  if (event.target === lightbox) {
+    closeLightbox();
+  }
+});
+
+// Cerrar con ESC
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+    closeLightbox();
+  }
+});
