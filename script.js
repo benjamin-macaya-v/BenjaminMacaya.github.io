@@ -24,6 +24,18 @@ const positions = [
 
 const sizes = [1, 0.8, 1.15, 0.9, 1.1, 0.85, 1, 0.95];
 const angles = [-8, 12, -5, 9, -12, 6, 15, -7];
+const angles = [-8, 12, -5, 9, -12, 6, 15, -7];
+
+// Movimiento orbital individual de las fotografías
+const orbitData = photos.map((photo, i) => ({
+  radiusX: 12 + (i % 3) * 8,
+  radiusY: 10 + (i % 4) * 6,
+  speed: 0.00015 + i * 0.000025,
+  phase: i * 1.3
+}));
+
+let elapsed = 0;
+let lastTime = 0;
 
 function multiply(a, b) {
   return {
@@ -64,7 +76,21 @@ function rotateWorld(dx, dy) {
 }
 
 photos.forEach((photo, i) => {
-  const [x, y, z] = positions[i];
+  const [px, py, pz] = positions[i];
+  const orbit = orbitData[i];
+
+  const t = elapsed * orbit.speed + orbit.phase;
+
+  const x = px + Math.cos(t) * orbit.radiusX;
+  const y = py + Math.sin(t) * orbit.radiusY;
+  const z = pz + Math.sin(t * 0.7) * 18;
+
+  photo.style.transform = `
+    translate(-50%, -50%)
+    translate3d(${x}px, ${y}px, ${z}px)
+    rotate3d(${rotation.x}, ${rotation.y}, ${rotation.z}, ${2*Math.acos(rotation.w)}rad)
+  `;
+});
 
   photo.style.transform = `
     translate(-50%, -50%)
@@ -153,7 +179,14 @@ collage.addEventListener("pointercancel", stopDrag);
 collage.addEventListener("selectstart", e => e.preventDefault());
 collage.addEventListener("dragstart", e => e.preventDefault());
 
-function animate() {
+function animate(timestamp) {
+  if (!lastTime) lastTime = timestamp;
+
+  const delta = Math.min(timestamp - lastTime, 50);
+  lastTime = timestamp;
+
+  elapsed += delta;
+
   if (!dragging) {
     rotateWorld(velocityY, velocityX);
 
@@ -162,9 +195,9 @@ function animate() {
 
     if (Math.abs(velocityX) < 0.00001) velocityX = 0;
     if (Math.abs(velocityY) < 0.00001) velocityY = 0;
-
-    updateWorld();
   }
+
+  updateWorld();
 
   requestAnimationFrame(animate);
 }
