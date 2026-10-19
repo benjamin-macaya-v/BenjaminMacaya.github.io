@@ -97,7 +97,24 @@ function quaternionToCSS(q) {
 
 photos.forEach((photo, i) => {
   const [x, y, z] = positions[i];
-  const img = photo.querySelector("img");
+  photos.forEach((photo, i) => {
+  const [x, y, z] = positions[i];
+
+  photo.style.transform = `
+    translate(-50%, -50%)
+    translate3d(${x}px, ${y}px, ${z}px)
+  `;
+
+  const media = photo.querySelector("img, video");
+
+  if (media) {
+    media.draggable = false;
+
+    media.addEventListener("dragstart", event => {
+      event.preventDefault();
+    });
+  }
+});
 
   photo.style.transform = `
     translate(-50%, -50%)
