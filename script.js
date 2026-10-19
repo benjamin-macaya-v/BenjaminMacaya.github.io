@@ -131,4 +131,23 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
+// Desactivar completamente el arrastre nativo de imágenes
+document.querySelectorAll(".photo-slot img").forEach((img) => {
+  img.draggable = false;
+
+  img.addEventListener("dragstart", (event) => {
+    event.preventDefault();
+  });
+});
+
+// Evitar selección de elementos durante el movimiento
+collage.addEventListener("selectstart", (event) => {
+  event.preventDefault();
+});
+
+// Evitar arrastre nativo dentro del espacio
+collage.addEventListener("dragstart", (event) => {
+  event.preventDefault();
+});
+
 animate();
