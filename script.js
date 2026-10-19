@@ -11,6 +11,9 @@ let dragging = false;
 let previousX = 0;
 let previousY = 0;
 
+let elapsed = 0;
+let lastTime = 0;
+
 const positions = [
   [-250, -100, 100],
   [100, -190, -120],
@@ -24,18 +27,15 @@ const positions = [
 
 const sizes = [1, 0.8, 1.15, 0.9, 1.1, 0.85, 1, 0.95];
 const angles = [-8, 12, -5, 9, -12, 6, 15, -7];
-const angles = [-8, 12, -5, 9, -12, 6, 15, -7];
 
-// Movimiento orbital individual de las fotografías
+// Movimiento orbital independiente
 const orbitData = photos.map((photo, i) => ({
-  radiusX: 12 + (i % 3) * 8,
-  radiusY: 10 + (i % 4) * 6,
-  speed: 0.00015 + i * 0.000025,
+  radiusX: 18 + (i % 3) * 12,
+  radiusY: 15 + (i % 4) * 10,
+  radiusZ: 20 + (i % 3) * 12,
+  speed: 0.00012 + i * 0.000025,
   phase: i * 1.3
 }));
-
-let elapsed = 0;
-let lastTime = 0;
 
 function multiply(a, b) {
   return {
@@ -75,40 +75,22 @@ function rotateWorld(dx, dy) {
   rotation.w /= length;
 }
 
+// Preparar fotografías
 photos.forEach((photo, i) => {
-  const [px, py, pz] = positions[i];
-  const orbit = orbitData[i];
+  photo.style.zIndex = Math.round(positions[i][2] + 500);
 
-  const t = elapsed * orbit.speed + orbit.phase;
+  const img = photo.querySelector("img");
 
-  const x = px + Math.cos(t) * orbit.radiusX;
-  const y = py + Math.sin(t) * orbit.radiusY;
-  const z = pz + Math.sin(t * 0.7) * 18;
-
-  photo.style.transform = `
-    translate(-50%, -50%)
-    translate3d(${x}px, ${y}px, ${z}px)
-    rotate3d(${rotation.x}, ${rotation.y}, ${rotation.z}, ${2*Math.acos(rotation.w)}rad)
-  `;
-});
-
-  photo.style.transform = `
-    translate(-50%, -50%)
-    translate3d(${x}px, ${y}px, ${z}px)
-  `;
-
-  photo.style.zIndex = Math.round(z + 500);
-
-  photo.querySelector("img").style.transform = `
+  img.style.transform = `
     rotateZ(${angles[i]}deg)
     scale(${sizes[i]})
   `;
 
-  const img = photo.querySelector("img");
   img.draggable = false;
   img.addEventListener("dragstart", e => e.preventDefault());
 });
 
+// Actualizar universo y fotografías
 function updateWorld() {
   const { x, y, z, w } = rotation;
 
@@ -123,21 +105,28 @@ function updateWorld() {
 
   photos.forEach((photo, i) => {
     const [px, py, pz] = positions[i];
+    const orbit = orbitData[i];
+
+    const t = elapsed * orbit.speed + orbit.phase;
+
+    const x = px + Math.cos(t) * orbit.radiusX;
+    const y = py + Math.sin(t) * orbit.radiusY;
+    const z = pz + Math.sin(t * 0.7) * orbit.radiusZ;
 
     photo.style.transform = `
       translate(-50%, -50%)
-      translate3d(${px}px, ${py}px, ${pz}px)
-      rotate3d(${x}, ${y}, ${z}, ${2*Math.acos(w)}rad)
+      translate3d(${x}px, ${y}px, ${z}px)
+      rotate3d(${rotation.x}, ${rotation.y}, ${rotation.z}, ${2*Math.acos(rotation.w)}rad)
     `;
   });
 }
 
-updateWorld();
-
+// Arrastrar universo
 collage.addEventListener("pointerdown", event => {
   if (event.button !== 0) return;
 
   dragging = true;
+
   previousX = event.clientX;
   previousY = event.clientY;
 
@@ -179,6 +168,7 @@ collage.addEventListener("pointercancel", stopDrag);
 collage.addEventListener("selectstart", e => e.preventDefault());
 collage.addEventListener("dragstart", e => e.preventDefault());
 
+// Animación continua
 function animate(timestamp) {
   if (!lastTime) lastTime = timestamp;
 
@@ -202,4 +192,4 @@ function animate(timestamp) {
   requestAnimationFrame(animate);
 }
 
-animate();
+requestAnimationFrame(animate);
