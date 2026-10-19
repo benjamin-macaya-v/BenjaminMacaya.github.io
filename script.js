@@ -16,10 +16,8 @@ let lastTime = 0;
 let velocityX = 0;
 let velocityY = 0;
 
-// Velocidad de giro automático hacia la derecha
 const autoSpeed = 0.00022;
 
-// Posiciones tridimensionales alrededor del centro
 const positions = [
   [-310, -180, 100],
   [-80, -300, -150],
@@ -31,10 +29,7 @@ const positions = [
   [0, 20, 330]
 ];
 
-// Escalas y pequeñas inclinaciones visuales
 const sizes = [1, 1, 1, 1, 1, 1, 1, 1];
-
-const angles = [0, 0, 0, 0, 0, 0, 0, 0];
 
 // ==================================
 // FUNCIONES DE ROTACIÓN 3D
@@ -73,16 +68,12 @@ function normalize(q) {
 }
 
 function rotateWorld(horizontal, vertical) {
-  const yaw = axisRotation("y", horizontal);
-  const pitch = axisRotation("x", vertical);
-
-  rotation = multiply(yaw, rotation);
-  rotation = multiply(rotation, pitch);
+  rotation = multiply(axisRotation("y", horizontal), rotation);
+  rotation = multiply(rotation, axisRotation("x", vertical));
 
   normalize(rotation);
 }
 
-// Convierte un cuaternión en una rotación CSS
 function quaternionToCSS(q) {
   const w = Math.max(-1, Math.min(1, q.w));
   const angle = 2 * Math.acos(w);
@@ -92,11 +83,12 @@ function quaternionToCSS(q) {
     return "rotate3d(0, 1, 0, 0rad)";
   }
 
-  const x = q.x / sinHalf;
-  const y = q.y / sinHalf;
-  const z = q.z / sinHalf;
-
-  return `rotate3d(${x}, ${y}, ${z}, ${angle}rad)`;
+  return `rotate3d(
+    ${q.x / sinHalf},
+    ${q.y / sinHalf},
+    ${q.z / sinHalf},
+    ${angle}rad
+  )`;
 }
 
 // ==================================
@@ -105,7 +97,6 @@ function quaternionToCSS(q) {
 
 photos.forEach((photo, i) => {
   const [x, y, z] = positions[i];
-
   const img = photo.querySelector("img");
 
   photo.style.transform = `
@@ -113,9 +104,10 @@ photos.forEach((photo, i) => {
     translate3d(${x}px, ${y}px, ${z}px)
   `;
 
- img.style.transform = `rotateZ(0deg) scale(${sizes[i]})`;
+  img.style.transform = `scale(${sizes[i]})`;
 
   img.draggable = false;
+
   img.addEventListener("dragstart", event => {
     event.preventDefault();
   });
@@ -126,11 +118,8 @@ photos.forEach((photo, i) => {
 // ==================================
 
 function updateWorld() {
-  // Rotación completa del conjunto
   world.style.transform = quaternionToCSS(rotation);
 
-  // Rotación inversa de cada fotografía:
-  // así siempre mira de frente a la cámara.
   const inverseRotation = {
     x: -rotation.x,
     y: -rotation.y,
@@ -213,10 +202,8 @@ function animate(timestamp) {
   lastTime = timestamp;
 
   if (!dragging) {
-    // Giro automático hacia la derecha
     rotateWorld(autoSpeed * delta, 0);
 
-    // Inercia del movimiento del mouse
     if (velocityX !== 0 || velocityY !== 0) {
       rotateWorld(velocityX, velocityY);
 
