@@ -102,8 +102,8 @@ header a {
 
 .photo-slot {
   position: absolute;
-  width: 2800px;
-  height: 3500px;
+  width: 280px;
+  height: 350px;
   left: 100%;
   top: 100%;
   transform-style: preserve-3d;
