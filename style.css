@@ -102,11 +102,10 @@ header a {
 
 .photo-slot {
   position: absolute;
-  width: 190px;
-  height: 240px;
+  width: 240px;
+  height: 300px;
   left: 50%;
   top: 50%;
-
   transform-style: preserve-3d;
   pointer-events: none;
 }
@@ -198,8 +197,8 @@ footer a {
 
 @media (max-width: 700px) {
   .photo-slot {
-    width: 125px;
-    height: 165px;
+    width: 160px;
+    height: 200px;
   }
 }
 
