@@ -70,6 +70,7 @@ updateWorld();
 
 // Arrastrar el universo
 collage.addEventListener("pointerdown", (event) => {
+  if (event.button !== 0) return;
   dragging = true;
 
   previousX = event.clientX;
