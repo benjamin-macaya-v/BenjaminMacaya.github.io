@@ -114,4 +114,17 @@ header a {
     width: 125px;
     height: 165px;
   }
+  .world,
+.photo-slot,
+.photo-slot img {
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-user-drag: none !important;
+}
+
+.collage {
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
 }
