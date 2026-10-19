@@ -242,113 +242,138 @@ const lightboxVideo = document.querySelector("#lightboxVideo");
 const lightboxGif = document.querySelector("#lightboxGif");
 const lightboxClose = document.querySelector("#lightboxClose");
 
-// Abrir medios
-photos.forEach(photo => {
-  const media = photo.querySelector("video, img");
+if (lightbox && lightboxVideo && lightboxGif && lightboxClose) {
 
-  if (!media) return;
+  // Abrir medios
+  photos.forEach(photo => {
 
-  const isVideo = media.tagName === "VIDEO";
+    const media = photo.querySelector("video, img");
 
-  const isGif = media.tagName === "IMG" &&
-    media.src.toLowerCase().split("?")[0].endsWith(".gif");
+    if (!media) return;
 
-  if (!isVideo && !isGif) return;
+    const isVideo = media.tagName === "VIDEO";
 
-  media.style.pointerEvents = "auto";
-  media.style.cursor = "pointer";
+    const isGif = media.tagName === "IMG" &&
+      media.src.toLowerCase().split("?")[0].endsWith(".gif");
 
-  media.addEventListener("click", async event => {
-    event.stopPropagation();
+    if (!isVideo && !isGif) return;
 
-    lightbox.classList.add("active");
+    media.style.pointerEvents = "auto";
+    media.style.cursor = "pointer";
 
-    if (isVideo) {
-      lightboxGif.style.display = "none";
-      lightboxVideo.style.display = "block";
+    media.addEventListener("click", event => {
 
-      const source = media.querySelector("source");
-      const videoURL = source ? source.src : media.currentSrc || media.src;
+      event.stopPropagation();
+
+      // Mostrar overlay
+      lightbox.classList.add("active");
+
+      if (isVideo) {
+
+        lightboxGif.style.display = "none";
+        lightboxVideo.style.display = "block";
+
+        const source = media.querySelector("source");
+        const videoURL = source ? source.src : media.currentSrc || media.src;
+
+        lightboxVideo.pause();
+        lightboxVideo.removeAttribute("src");
+
+        lightboxVideo.src = videoURL;
+        lightboxVideo.muted = false;
+        lightboxVideo.volume = 1;
+        lightboxVideo.controls = true;
+        lightboxVideo.currentTime = 0;
+
+        lightboxVideo.load();
+
+        // Iniciar reproducción
+        const playPromise = lightboxVideo.play();
+
+        if (playPromise) {
+          playPromise.catch(error => {
+            console.log("Presiona play para iniciar el video:", error);
+          });
+        }
+
+        // Solicitar pantalla completa inmediatamente
+        if (lightbox.requestFullscreen) {
+          lightbox.requestFullscreen().catch(error => {
+            console.log("Pantalla completa no disponible:", error);
+          });
+        }
+      }
+
+      if (isGif) {
+
+        lightboxVideo.pause();
+        lightboxVideo.style.display = "none";
+
+        lightboxGif.style.display = "block";
+        lightboxGif.src = media.src;
+
+        // Solicitar pantalla completa
+        if (lightbox.requestFullscreen) {
+          lightbox.requestFullscreen().catch(error => {
+            console.log("Pantalla completa no disponible:", error);
+          });
+        }
+      }
+
+    });
+
+  });
+
+
+  // Cerrar overlay
+  function closeLightbox() {
+
+    lightbox.classList.remove("active");
+
+    lightboxVideo.pause();
+    lightboxVideo.removeAttribute("src");
+    lightboxVideo.load();
+
+    lightboxGif.removeAttribute("src");
+    lightboxGif.style.display = "none";
+    lightboxVideo.style.display = "none";
+
+    if (document.fullscreenElement === lightbox) {
+      document.exitFullscreen().catch(error => {
+        console.log("No se pudo salir de pantalla completa:", error);
+      });
+    }
+  }
+
+
+  // Botón de cierre
+  lightboxClose.addEventListener("click", closeLightbox);
+
+
+  // Cerrar con ESC
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && lightbox.classList.contains("active")) {
+      closeLightbox();
+    }
+  });
+
+
+  // Detectar salida de pantalla completa
+  document.addEventListener("fullscreenchange", () => {
+
+    if (
+      document.fullscreenElement !== lightbox &&
+      lightbox.classList.contains("active")
+    ) {
+      lightbox.classList.remove("active");
 
       lightboxVideo.pause();
       lightboxVideo.removeAttribute("src");
       lightboxVideo.load();
 
-      lightboxVideo.src = videoURL;
-      lightboxVideo.muted = false;
-      lightboxVideo.volume = 1;
-      lightboxVideo.controls = true;
-
-      try {
-        // Esperar a que el video esté listo
-        await new Promise((resolve, reject) => {
-          lightboxVideo.addEventListener("loadedmetadata", resolve, { once: true });
-          lightboxVideo.addEventListener("error", reject, { once: true });
-          lightboxVideo.load();
-        });
-
-        // Reiniciar y reproducir
-        lightboxVideo.currentTime = 0;
-        await lightboxVideo.play();
-
-        // Solicitar pantalla completa real
-        if (lightbox.requestFullscreen) {
-          await lightbox.requestFullscreen();
-        }
-
-      } catch (error) {
-        console.log("No se pudo abrir el video:", error);
-      }
+      lightboxGif.removeAttribute("src");
     }
 
-    if (isGif) {
-      lightboxVideo.pause();
-      lightboxVideo.style.display = "none";
-
-      lightboxGif.style.display = "block";
-      lightboxGif.src = media.src;
-
-      if (lightbox.requestFullscreen) {
-        try {
-          await lightbox.requestFullscreen();
-        } catch (error) {
-          console.log("Pantalla completa no disponible:", error);
-        }
-      }
-    }
   });
-});
 
-// Cerrar lightbox
-async function closeLightbox() {
-  lightboxVideo.pause();
-  lightboxVideo.currentTime = 0;
-
-  lightbox.classList.remove("active");
-
-  if (document.fullscreenElement) {
-    await document.exitFullscreen();
-  }
-
-  lightboxVideo.removeAttribute("src");
-  lightboxVideo.load();
-
-  lightboxGif.removeAttribute("src");
 }
-
-// Botón cerrar
-lightboxClose.addEventListener("click", closeLightbox);
-
-// Cerrar al pulsar ESC
-document.addEventListener("keydown", event => {
-  if (event.key === "Escape" && !document.fullscreenElement) {
-    closeLightbox();
-  }
-});
-
-// Si se sale de pantalla completa
-document.addEventListener("fullscreenchange", () => {
-  if (!document.fullscreenElement && lightbox.classList.contains("active")) {
-    closeLightbox();
-  }
-});
