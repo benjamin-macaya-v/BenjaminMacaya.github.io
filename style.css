@@ -63,15 +63,11 @@ header a {
 
 .collage {
   width: 100vw;
-  height: 100vh;
   height: 100dvh;
   position: relative;
   overflow: hidden;
-  perspective: 1200px;
+  perspective: 1400px;
   perspective-origin: 50% 50%;
-  cursor: grab;
-  touch-action: none;
-  background: #050505;
 }
 
 .collage.dragging {
@@ -88,12 +84,9 @@ header a {
   height: 100%;
   left: 0;
   top: 0;
-
   transform-style: preserve-3d;
   transform-origin: center center;
-
   will-change: transform;
-  pointer-events: none;
 }
 
 /* =========================
@@ -107,7 +100,6 @@ header a {
   left: 50%;
   top: 50%;
   transform-style: preserve-3d;
-  pointer-events: none;
 }
 
 /* =========================
@@ -119,10 +111,6 @@ header a {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  object-position: center;
-  backface-visibility: hidden;
-  user-select: none;
-  -webkit-user-drag: none;
 }
 
 /* =========================
