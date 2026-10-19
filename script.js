@@ -113,10 +113,7 @@ photos.forEach((photo, i) => {
     translate3d(${x}px, ${y}px, ${z}px)
   `;
 
-  img.style.transform = `
-    rotateZ(${angles[i]}deg)
-    scale(${sizes[i]})
-  `;
+ img.style.transform = `rotateZ(0deg) scale(${sizes[i]})`;
 
   img.draggable = false;
   img.addEventListener("dragstart", event => {
