@@ -7,27 +7,25 @@ let dragging = false;
 let previousX = 0;
 let lastTime = 0;
 
-const autoSpeed = 0.025;
+const autoSpeed = 0.012;
 
-// Posiciones 3D de las ocho imágenes
+// Distribución de la nube 3D
 const positions = [
-  [-250, -100, 100],
-  [100, -190, -120],
-  [270, 30, 80],
-  [-100, 160, -220],
-  [40, 50, 240],
-  [-300, 100, -80],
-  [180, 180, -180],
-  [-30, -230, 30]
+  [-170, -100, 80],
+  [0, -170, -100],
+  [170, -90, 60],
+  [-190, 80, -100],
+  [0, 60, 150],
+  [180, 100, -80],
+  [-80, 180, -160],
+  [100, 190, 30]
 ];
 
-// Tamaños relativos de cada fotografía
-const sizes = [1, 0.8, 1.15, 0.9, 1.1, 0.85, 1, 0.95];
+const sizes = [0.9, 0.8, 1, 0.85, 1.1, 0.9, 0.8, 0.95];
 
-// Inclinación individual de las fotografías
-const angles = [-8, 12, -5, 9, -12, 6, 15, -7];
+const angles = [-8, 10, -5, 8, -10, 6, 12, -7];
 
-// Distribuir las imágenes en el espacio 3D
+// Crear la distribución
 photos.forEach((photo, i) => {
   const [x, y, z] = positions[i];
 
@@ -46,14 +44,14 @@ photos.forEach((photo, i) => {
   img.draggable = false;
 });
 
-// Mover toda la nube sin alterar las posiciones individuales
+// Movimiento del conjunto
 function updateWorld() {
   world.style.transform = `
     translate3d(${positionX}px, 0, 0)
   `;
 }
 
-// Movimiento con el mouse
+// Arrastrar con el mouse
 collage.addEventListener("pointerdown", (event) => {
   if (event.button !== 0) return;
 
@@ -83,11 +81,12 @@ function stopDrag() {
 collage.addEventListener("pointerup", stopDrag);
 collage.addEventListener("pointercancel", stopDrag);
 
-collage.addEventListener("dragstart", (event) => {
+// Evitar arrastrar las imágenes individualmente
+collage.addEventListener("dragstart", event => {
   event.preventDefault();
 });
 
-// Movimiento automático de toda la nube hacia la derecha
+// Movimiento automático
 function animate(timestamp) {
   if (!lastTime) lastTime = timestamp;
 
