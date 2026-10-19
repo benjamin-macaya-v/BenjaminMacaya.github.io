@@ -89,7 +89,7 @@ header a {
   top: 0;
 
   transform-style: preserve-3d;
-  transform-origin: 50% 50%;
+  transform-origin: center center;
 
   will-change: transform;
   pointer-events: none;
