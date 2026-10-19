@@ -29,8 +29,6 @@ const positions = [
   [0, 20, 330]
 ];
 
-const sizes = [1, 1, 1, 1, 1, 1, 1, 1];
-
 // ==================================
 // FUNCIONES DE ROTACIÓN 3D
 // ==================================
@@ -92,10 +90,10 @@ function quaternionToCSS(q) {
 }
 
 // ==================================
-// PREPARAR LAS FOTOGRAFÍAS
+// PREPARAR VIDEOS E IMÁGENES
 // ==================================
 
-photos.forEach((photo, i) => {
+photos.forEach(photo => {
   const media = photo.querySelector("img, video");
 
   if (!media) return;
@@ -106,7 +104,6 @@ photos.forEach((photo, i) => {
     event.preventDefault();
   });
 
-  // Reproducción automática de los videos
   if (media.tagName === "VIDEO") {
     media.muted = true;
     media.loop = true;
@@ -150,8 +147,6 @@ function updateWorld() {
 // ==================================
 
 collage.addEventListener("pointerdown", event => {
-
-  // Evita iniciar el arrastre al hacer clic en imágenes o videos
   if (event.target.closest(".photo-slot video, .photo-slot img")) {
     return;
   }
@@ -244,10 +239,11 @@ const lightboxClose = document.querySelector("#lightboxClose");
 
 if (lightbox && lightboxVideo && lightboxGif && lightboxClose) {
 
-  // FUNCIÓN PARA CERRAR EL OVERLAY
+  let openingLightbox = false;
+
+  // CERRAR LIGHTBOX
 
   function closeLightbox() {
-
     lightbox.classList.remove("active");
 
     lightboxVideo.pause();
@@ -259,16 +255,14 @@ if (lightbox && lightboxVideo && lightboxGif && lightboxClose) {
     lightboxVideo.style.display = "none";
     lightboxGif.style.display = "none";
 
-    if (document.fullscreenElement === lightbox) {
+    if (document.fullscreenElement) {
       document.exitFullscreen().catch(() => {});
     }
   }
 
-
   // ABRIR VIDEOS Y GIFS
 
   photos.forEach(photo => {
-
     const media = photo.querySelector("video, img");
 
     if (!media) return;
@@ -281,7 +275,6 @@ if (lightbox && lightboxVideo && lightboxGif && lightboxClose) {
     if (!isVideo && !isGif) return;
 
     media.addEventListener("click", event => {
-
       event.preventDefault();
       event.stopPropagation();
 
@@ -292,7 +285,6 @@ if (lightbox && lightboxVideo && lightboxGif && lightboxClose) {
       // =========================
 
       if (isVideo) {
-
         lightboxGif.style.display = "none";
         lightboxVideo.style.display = "block";
 
@@ -312,56 +304,47 @@ if (lightbox && lightboxVideo && lightboxGif && lightboxClose) {
 
         lightboxVideo.load();
 
-        // Intentar pantalla completa
+        // PANTALLA COMPLETA DEL LIGHTBOX
         if (lightbox.requestFullscreen) {
           lightbox.requestFullscreen().catch(error => {
             console.log("Pantalla completa no disponible:", error);
           });
         }
 
-        // Reproducir video
+        // REPRODUCIR VIDEO
         lightboxVideo.play().catch(error => {
-          console.log("Pulsa play para escuchar el video:", error);
+          console.log("Pulsa play para reproducir el video:", error);
         });
-
       }
-
 
       // =========================
       // ABRIR GIF
       // =========================
 
       if (isGif) {
-
         lightboxVideo.pause();
         lightboxVideo.style.display = "none";
 
         lightboxGif.style.display = "block";
         lightboxGif.src = media.src;
 
-        // Intentar pantalla completa
+        // PANTALLA COMPLETA DEL LIGHTBOX
         if (lightbox.requestFullscreen) {
           lightbox.requestFullscreen().catch(error => {
             console.log("Pantalla completa no disponible:", error);
           });
         }
-
       }
-
     });
-
   });
-
 
   // BOTÓN CERRAR
 
   lightboxClose.addEventListener("click", closeLightbox);
 
-
   // CERRAR CON ESC
 
   document.addEventListener("keydown", event => {
-
     if (
       event.key === "Escape" &&
       lightbox.classList.contains("active") &&
@@ -369,32 +352,18 @@ if (lightbox && lightboxVideo && lightboxGif && lightboxClose) {
     ) {
       closeLightbox();
     }
-
   });
-
 
   // DETECTAR SALIDA DE PANTALLA COMPLETA
 
   document.addEventListener("fullscreenchange", () => {
-
     if (
-      document.fullscreenElement !== lightbox &&
-      lightbox.classList.contains("active")
+      !document.fullscreenElement &&
+      lightbox.classList.contains("active") &&
+      !openingLightbox
     ) {
-
-      lightbox.classList.remove("active");
-
-      lightboxVideo.pause();
-      lightboxVideo.removeAttribute("src");
-      lightboxVideo.load();
-
-      lightboxGif.removeAttribute("src");
-
-      lightboxVideo.style.display = "none";
-      lightboxGif.style.display = "none";
-
+      closeLightbox();
     }
-
   });
 
 }
