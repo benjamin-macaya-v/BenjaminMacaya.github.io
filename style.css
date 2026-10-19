@@ -68,6 +68,9 @@ header a {
   overflow: hidden;
   perspective: 1400px;
   perspective-origin: 50% 50%;
+  cursor: grab;
+  touch-action: none;
+  background: #050505;
 }
 
 .collage.dragging {
@@ -84,10 +87,14 @@ header a {
   height: 100%;
   left: 0;
   top: 0;
+
   transform-style: preserve-3d;
   transform-origin: center center;
+
   will-change: transform;
+  pointer-events: none;
 }
+
 
 /* =========================
    CONTENEDORES DE FOTOS
@@ -99,7 +106,9 @@ header a {
   height: 240px;
   left: 50%;
   top: 50%;
+
   transform-style: preserve-3d;
+  pointer-events: none;
 }
 
 /* =========================
@@ -110,8 +119,16 @@ header a {
   display: block;
   width: 100%;
   height: 100%;
+
   object-fit: contain;
+  object-position: center;
+
+  backface-visibility: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
 }
+
 
 /* =========================
    ETIQUETA INFERIOR
@@ -184,6 +201,7 @@ footer a {
     width: 125px;
     height: 165px;
   }
+}
 
   .photo-slot img {
     width: 100%;
