@@ -32,9 +32,9 @@ const positions = [
 ];
 
 // Escalas y pequeñas inclinaciones visuales
-const sizes = [1, 0.85, 1.05, 0.9, 1.1, 0.85, 0.95, 1];
+const sizes = [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6];
 
-const angles = [-8, 10, -5, 8, -10, 6, 12, -7];
+const angles = [0, 0, 0, 0, 0, 0, 0, 0];
 
 // ==================================
 // FUNCIONES DE ROTACIÓN 3D
