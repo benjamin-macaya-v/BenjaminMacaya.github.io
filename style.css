@@ -194,6 +194,57 @@ footer a {
   pointer-events: none !important;
 }
 
+/* ==================================
+   PANTALLA COMPLETA DE VIDEOS Y GIFS
+================================== */
+
+.media-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.96);
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+}
+
+.media-lightbox.active {
+  display: flex;
+}
+
+.media-lightbox video,
+.media-lightbox img {
+  max-width: 95vw;
+  max-height: 90vh;
+  object-fit: contain;
+}
+
+.media-lightbox video {
+  display: none;
+}
+
+.media-lightbox img {
+  display: none;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  z-index: 2;
+
+  color: white;
+  background: transparent;
+  border: none;
+
+  font-size: 45px;
+  cursor: pointer;
+}
+
 /* =========================
    RESPONSIVE
 ========================= */
@@ -225,4 +276,5 @@ footer a {
   .collage-label {
     left: 16px;
   }
+
 }
