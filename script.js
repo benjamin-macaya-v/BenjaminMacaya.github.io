@@ -1,166 +1,40 @@
 const collage = document.querySelector(".collage");
 const world = document.querySelector("#world");
-const photos = [...document.querySelectorAll(".photo-slot")];
 
-// ROTACIÓN 3D
-let rotation = { x: 0, y: 0, z: 0, w: 1 };
-
+let positionX = 0;
 let velocityX = 0;
-let velocityY = 0;
-
 let dragging = false;
 let previousX = 0;
-let previousY = 0;
 
-// TIEMPO Y VELOCIDAD AUTOMÁTICA
+const autoSpeed = 0.025; // Velocidad del movimiento automático
 let lastTime = 0;
 
-const autoRotationSpeed = 0.00008;
-
-// POSICIONES DE LAS FOTOGRAFÍAS
-const positions = [
-  [-250, -100, 100],
-  [100, -190, -120],
-  [270, 30, 80],
-  [-100, 160, -220],
-  [40, 50, 240],
-  [-300, 100, -80],
-  [180, 180, -180],
-  [-30, -230, 30]
-];
-
-const sizes = [1, 0.8, 1.15, 0.9, 1.1, 0.85, 1, 0.95];
-const angles = [-8, 12, -5, 9, -12, 6, 15, -7];
-
-// MULTIPLICACIÓN DE CUATERNIONES
-function multiply(a, b) {
-  return {
-    w: a.w*b.w - a.x*b.x - a.y*b.y - a.z*b.z,
-    x: a.w*b.x + a.x*b.w + a.y*b.z - a.z*b.y,
-    y: a.w*b.y - a.x*b.z + a.y*b.w + a.z*b.x,
-    z: a.w*b.z + a.x*b.y - a.y*b.x + a.z*b.w
-  };
-}
-
-// ROTACIÓN SOBRE UN EJE
-function axisRotation(axis, angle) {
-  const half = angle / 2;
-  const s = Math.sin(half);
-
-  return {
-    w: Math.cos(half),
-    x: axis === "x" ? s : 0,
-    y: axis === "y" ? s : 0,
-    z: axis === "z" ? s : 0
-  };
-}
-
-// GIRAR EL UNIVERSO
-function rotateWorld(dx, dy) {
-  const horizontal = axisRotation("y", dx);
-  const vertical = axisRotation("x", dy);
-
-  rotation = multiply(horizontal, rotation);
-  rotation = multiply(rotation, vertical);
-
-  const length = Math.hypot(
-    rotation.x,
-    rotation.y,
-    rotation.z,
-    rotation.w
-  );
-
-  rotation.x /= length;
-  rotation.y /= length;
-  rotation.z /= length;
-  rotation.w /= length;
-}
-
-// PREPARAR FOTOGRAFÍAS
-photos.forEach((photo, i) => {
-  const img = photo.querySelector("img");
-
-  photo.style.zIndex = Math.round(positions[i][2] + 500);
-
-  img.style.transform = `
-    rotateZ(${angles[i]}deg)
-    scale(${sizes[i]})
-  `;
-
-  img.draggable = false;
-
-  img.addEventListener("dragstart", event => {
-    event.preventDefault();
-  });
-});
-
-// ACTUALIZAR EL UNIVERSO
 function updateWorld() {
-  const { x, y, z, w } = rotation;
-
-  const matrix = [
-    1 - 2*(y*y + z*z),
-    2*(x*y + z*w),
-    2*(x*z - y*w),
-    0,
-
-    2*(x*y - z*w),
-    1 - 2*(x*x + z*z),
-    2*(y*z + x*w),
-    0,
-
-    2*(x*z + y*w),
-    2*(y*z - x*w),
-    1 - 2*(x*x + y*y),
-    0,
-
-    0, 0, 0, 1
-  ];
-
-  world.style.transform = `matrix3d(${matrix.join(",")})`;
-
-  photos.forEach((photo, i) => {
-    const [px, py, pz] = positions[i];
-
-    photo.style.transform = `
-      translate(-50%, -50%)
-      translate3d(${px}px, ${py}px, ${pz}px)
-    `;
-  });
+  world.style.transform = `translate3d(${positionX}px, 0, 0)`;
 }
 
-// ARRASTRAR CON EL MOUSE
-collage.addEventListener("pointerdown", event => {
+collage.addEventListener("pointerdown", (event) => {
   if (event.button !== 0) return;
 
   dragging = true;
-
   previousX = event.clientX;
-  previousY = event.clientY;
-
   velocityX = 0;
-  velocityY = 0;
 
   collage.classList.add("dragging");
   collage.setPointerCapture(event.pointerId);
 });
 
-collage.addEventListener("pointermove", event => {
+collage.addEventListener("pointermove", (event) => {
   if (!dragging) return;
 
   const dx = event.clientX - previousX;
-  const dy = event.clientY - previousY;
 
-  const horizontal = dx * 0.005;
-  const vertical = dy * 0.005;
-
-  rotateWorld(horizontal, vertical);
-
-  velocityX = vertical * 0.12;
-  velocityY = horizontal * 0.12;
+  positionX += dx;
+  velocityX = dx * 0.08;
 
   previousX = event.clientX;
-  previousY = event.clientY;
+
+  updateWorld();
 });
 
 function stopDrag() {
@@ -171,15 +45,10 @@ function stopDrag() {
 collage.addEventListener("pointerup", stopDrag);
 collage.addEventListener("pointercancel", stopDrag);
 
-collage.addEventListener("selectstart", event => {
+collage.addEventListener("dragstart", (event) => {
   event.preventDefault();
 });
 
-collage.addEventListener("dragstart", event => {
-  event.preventDefault();
-});
-
-// ANIMACIÓN CONTINUA
 function animate(timestamp) {
   if (!lastTime) lastTime = timestamp;
 
@@ -187,24 +56,21 @@ function animate(timestamp) {
   lastTime = timestamp;
 
   if (!dragging) {
-    // Giro automático horizontal
-    rotateWorld(autoRotationSpeed * delta, 0);
+    // Desplaza todo el conjunto hacia la derecha
+    positionX += autoSpeed * delta;
 
-    // Inercia del movimiento manual
-    rotateWorld(velocityY, velocityX);
+    // Conserva un poco de inercia después de arrastrar
+    positionX += velocityX * delta;
+    velocityX *= 0.94;
 
-    velocityX *= 0.96;
-    velocityY *= 0.96;
-
-    if (Math.abs(velocityX) < 0.00001) velocityX = 0;
-    if (Math.abs(velocityY) < 0.00001) velocityY = 0;
+    if (Math.abs(velocityX) < 0.001) {
+      velocityX = 0;
+    }
   }
 
   updateWorld();
-
   requestAnimationFrame(animate);
 }
 
-// INICIAR
 updateWorld();
 requestAnimationFrame(animate);
