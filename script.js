@@ -54,15 +54,12 @@ function updateWorld() {
     rotateY(${rotationY}deg)
   `;
 
-  // Compensar la rotación para que cada foto mire a cámara
-  photos.forEach((photo) => {
+  photos.forEach((photo, i) => {
+    const [x, y, z] = positions[i];
+
     photo.style.transform = `
       translate(-50%, -50%)
-      translate3d(
-        ${positions[photos.indexOf(photo)][0]}px,
-        ${positions[photos.indexOf(photo)][1]}px,
-        ${positions[photos.indexOf(photo)][2]}px
-      )
+      translate3d(${x}px, ${y}px, ${z}px)
       rotateY(${-rotationY}deg)
       rotateX(${-rotationX}deg)
     `;
