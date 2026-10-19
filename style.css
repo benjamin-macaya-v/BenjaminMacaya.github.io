@@ -14,51 +14,37 @@ body {
   height: 100%;
   background: #050505;
   color: white;
-  font-family: Arial, sans-serif;
+  font-family: Candara, "Segoe UI", sans-serif;
   overflow: hidden;
 }
 
 /* =========================
-   HEADER
+   ENCABEZADO SUPERIOR
 ========================= */
 
-header {
-  position: absolute;
+.site-header {
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  padding: 18px 24px;
+  padding: 14px 32px;
   display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  z-index: 1000;
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 10000;
   pointer-events: none;
 }
 
-header a {
-  pointer-events: auto;
+.site-name {
   color: white;
-  text-decoration: none;
+  font-family: Candara, "Segoe UI", sans-serif;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
 }
 
 /* =========================
-   ENCABEZADO DE SECCIÓN
-========================= */
-
-.section-head {
-  position: absolute;
-  top: 48px;
-  left: 24px;
-  right: 24px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  z-index: 1000;
-  pointer-events: none;
-}
-
-/* =========================
-   COLLAGE
+   COLLAGE 3D
 ========================= */
 
 .collage {
@@ -153,12 +139,28 @@ header a {
 }
 
 /* =========================
+   ENCABEZADO DE SECCIÓN
+========================= */
+
+.section-head {
+  position: fixed;
+  top: 48px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* =========================
    ETIQUETA INFERIOR
 ========================= */
 
 .collage-label {
-  position: absolute;
-  bottom: 20px;
+  position: fixed;
+  bottom: 60px;
   left: 24px;
   font-size: 11px;
   z-index: 1000;
@@ -177,20 +179,65 @@ header a {
 }
 
 /* =========================
-   FOOTER
+   FOOTER INFERIOR
 ========================= */
 
-footer {
+.site-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 12px 22px;
   display: flex;
-  justify-content: space-between;
-  padding: 18px 24px;
-  font-size: 11px;
-  background: #050505;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 10000;
+  background: transparent;
 }
 
-footer a {
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ICONOS */
+
+.footer-left a:not(.email-link) {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
   text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.footer-left svg {
+  width: 32px;
+  height: 32px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.footer-left a:hover {
+  opacity: 0.65;
+}
+
+/* CORREO */
+
+.email-link {
+  color: white;
+  font-family: Candara, "Segoe UI", sans-serif;
+  font-size: 19px;
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 3px;
+  transition: opacity 0.2s ease;
 }
 
 /* =========================
@@ -225,8 +272,12 @@ footer a {
     object-fit: contain;
   }
 
-  header {
-    padding: 16px;
+  .site-header {
+    padding: 14px 16px;
+  }
+
+  .site-name {
+    font-size: 16px;
   }
 
   .section-head {
@@ -236,6 +287,29 @@ footer a {
 
   .collage-label {
     left: 16px;
+    bottom: 55px;
+  }
+
+  .site-footer {
+    padding: 12px 16px;
+  }
+
+  .footer-left {
+    gap: 9px;
+  }
+
+  .footer-left a:not(.email-link) {
+    width: 28px;
+    height: 28px;
+  }
+
+  .footer-left svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .email-link {
+    font-size: 15px;
   }
 
 }
