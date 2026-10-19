@@ -110,21 +110,27 @@ header a {
 }
 
 @media (max-width: 700px) {
-  .photo {
+  .photo-slot {
     width: 125px;
     height: 165px;
   }
-  .world,
+}
+
+.collage,
+.world,
 .photo-slot,
 .photo-slot img {
-  pointer-events: none !important;
   user-select: none !important;
   -webkit-user-select: none !important;
   -webkit-user-drag: none !important;
 }
 
+.world,
+.photo-slot,
+.photo-slot img {
+  pointer-events: none !important;
+}
+
 .collage {
-  user-select: none;
-  -webkit-user-select: none;
   touch-action: none;
 }
