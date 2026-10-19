@@ -23,22 +23,23 @@
   <main class="collage" id="work">
 
     <div class="world" id="world">
-      
+  
       <div class="photo-slot">
-        <video autoplay muted loop playsinline>
-          <source src="images/VideosAnim (3).mp4" type="video/mp4" alt="Trailer Corre Conejo Corre">
+        <video autoplay muted loop playsinline aria-label="Trailer Corre Conejo Corre">
+          <source src="images/VideosAnim (3).mp4" type="video/mp4">
         </video>
       </div>
+    <div class="photo-slot">
       
       <div class="photo-slot">
-        <video autoplay muted loop playsinline>
-          <source src="images/VideosAnim (2).mp4" type="video/mp4" alt="Conejo01">
+        <video autoplay muted loop playsinline aria-label="Conejo02">
+          <source src="images/VideosAnim (2).mp4" type="video/mp4">
         </video>
       </div>
-      
+
       <div class="photo-slot">
-        <video autoplay muted loop playsinline>
-          <source src="images/VideosAnim (1).mp4" type="video/mp4" alt="Conejo02">
+        <video autoplay muted loop playsinline aria-label="Conejo01">
+          <source src="images/VideosAnim (1).mp4" type="video/mp4">
         </video>
       </div>
 
@@ -86,16 +87,23 @@
     <a href="#work">BACK TO TOP ↑</a>
   </footer>
 
-  <script src="script.js"></script>
-  
-<div class="media-lightbox" id="mediaLightbox">
-  <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">
-    &times;
-  </button>
+  <!-- OVERLAY PARA IMÁGENES, GIF Y VIDEOS -->
 
-  <video id="lightboxVideo" controls playsinline></video>
-  <img id="lightboxGif" alt="">
-</div>
-  
+  <div class="media-lightbox" id="mediaLightbox">
+
+    <button class="lightbox-close" id="lightboxClose" aria-label="Cerrar">
+      &times;
+    </button>
+
+    <video id="lightboxVideo" controls playsinline></video>
+
+    <img id="lightboxGif" alt="">
+
+  </div>
+
+  <!-- JAVASCRIPT -->
+
+  <script src="script.js"></script>
+
 </body>
 </html>
