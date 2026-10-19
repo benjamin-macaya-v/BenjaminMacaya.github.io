@@ -32,7 +32,7 @@ const positions = [
 ];
 
 // Escalas y pequeñas inclinaciones visuales
-const sizes = [1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4, 1.4];
+const sizes = [1, 1, 1, 1, 1, 1, 1, 1];
 
 const angles = [0, 0, 0, 0, 0, 0, 0, 0];
 
