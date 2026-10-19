@@ -150,6 +150,12 @@ function updateWorld() {
 // ==================================
 
 collage.addEventListener("pointerdown", event => {
+
+  // Evita iniciar el arrastre al hacer clic en imágenes o videos
+  if (event.target.closest(".photo-slot video, .photo-slot img")) {
+    return;
+  }
+
   if (event.button !== 0) return;
 
   dragging = true;
