@@ -1,6 +1,12 @@
+
 const collage = document.querySelector(".collage");
 const world = document.querySelector("#world");
 const photos = [...document.querySelectorAll(".photo-slot")];
+
+// Comprobar que existen los elementos necesarios
+if (!collage || !world) {
+  console.error("No se encontró .collage o #world en el HTML.");
+} else {
 
 // ==================================
 // CONFIGURACIÓN DE LA NUBE 3D
@@ -56,6 +62,8 @@ function axisRotation(axis, angle) {
 
 function normalize(q) {
   const length = Math.hypot(q.x, q.y, q.z, q.w);
+
+  if (length === 0) return q;
 
   q.x /= length;
   q.y /= length;
@@ -132,7 +140,11 @@ function updateWorld() {
   const billboardRotation = quaternionToCSS(inverseRotation);
 
   photos.forEach((photo, i) => {
-    const [x, y, z] = positions[i];
+    const position = positions[i];
+
+    if (!position) return;
+
+    const [x, y, z] = position;
 
     photo.style.transform = `
       translate(-50%, -50%)
@@ -147,9 +159,11 @@ function updateWorld() {
 // ==================================
 
 collage.addEventListener("pointerdown", event => {
+
+  // No iniciar el arrastre al hacer clic en medios o enlaces
   if (event.target.closest(".photo-slot a, .photo-slot video, .photo-slot img")) {
-  return;
-}
+    return;
+  }
 
   if (event.button !== 0) return;
 
@@ -162,6 +176,7 @@ collage.addEventListener("pointerdown", event => {
   velocityY = 0;
 
   collage.classList.add("dragging");
+
   collage.setPointerCapture(event.pointerId);
 });
 
@@ -193,6 +208,8 @@ function stopDrag() {
 collage.addEventListener("pointerup", stopDrag);
 collage.addEventListener("pointercancel", stopDrag);
 
+collage.addEventListener("lostpointercapture", stopDrag);
+
 collage.addEventListener("dragstart", event => {
   event.preventDefault();
 });
@@ -208,8 +225,11 @@ function animate(timestamp) {
   lastTime = timestamp;
 
   if (!dragging) {
+
+    // Rotación automática
     rotateWorld(autoSpeed * delta, 0);
 
+    // Inercia después de arrastrar
     if (velocityX !== 0 || velocityY !== 0) {
       rotateWorld(velocityX, velocityY);
 
@@ -225,6 +245,11 @@ function animate(timestamp) {
   requestAnimationFrame(animate);
 }
 
+// ==================================
+// INICIAR
+// ==================================
+
 updateWorld();
 requestAnimationFrame(animate);
+
 }
