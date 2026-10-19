@@ -92,8 +92,6 @@ collage.addEventListener("pointermove", (event) => {
   rotationY += dx * 0.4;
   rotationX -= dy * 0.3;
 
-  rotationX = Math.max(-80, Math.min(80, rotationX));
-
   velocityY = dx * 0.12;
   velocityX = -dy * 0.09;
 
