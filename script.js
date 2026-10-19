@@ -228,10 +228,6 @@ updateWorld();
 requestAnimationFrame(animate);
 
 // ==================================
-// ABRIR VIDEOS Y GIFS
-// ==================================
-
-// ==================================
 // LIGHTBOX DE VIDEOS Y GIFS
 // ==================================
 
@@ -240,6 +236,7 @@ const lightboxVideo = document.querySelector("#lightboxVideo");
 const lightboxGif = document.querySelector("#lightboxGif");
 const lightboxClose = document.querySelector("#lightboxClose");
 
+// Abrir medios
 photos.forEach(photo => {
   const media = photo.querySelector("video, img");
 
@@ -262,8 +259,6 @@ photos.forEach(photo => {
 
     if (isVideo) {
       lightboxGif.style.display = "none";
-      lightboxGif.removeAttribute("src");
-
       lightboxVideo.style.display = "block";
 
       const source = media.querySelector("source");
@@ -276,56 +271,78 @@ photos.forEach(photo => {
       lightboxVideo.src = videoURL;
       lightboxVideo.muted = false;
       lightboxVideo.volume = 1;
-      lightboxVideo.currentTime = 0;
+      lightboxVideo.controls = true;
 
-      lightboxVideo.load();
+      try {
+        // Esperar a que el video esté listo
+        await new Promise((resolve, reject) => {
+          lightboxVideo.addEventListener("loadedmetadata", resolve, { once: true });
+          lightboxVideo.addEventListener("error", reject, { once: true });
+          lightboxVideo.load();
+        });
 
-      lightboxVideo.onloadedmetadata = async () => {
+        // Reiniciar y reproducir
         lightboxVideo.currentTime = 0;
+        await lightboxVideo.play();
 
-        try {
-          await lightboxVideo.play();
-        } catch (error) {
-          console.log("No se pudo iniciar el video:", error);
+        // Solicitar pantalla completa real
+        if (lightbox.requestFullscreen) {
+          await lightbox.requestFullscreen();
         }
-      };
+
+      } catch (error) {
+        console.log("No se pudo abrir el video:", error);
+      }
     }
 
     if (isGif) {
       lightboxVideo.pause();
       lightboxVideo.style.display = "none";
+
       lightboxGif.style.display = "block";
       lightboxGif.src = media.src;
+
+      if (lightbox.requestFullscreen) {
+        try {
+          await lightbox.requestFullscreen();
+        } catch (error) {
+          console.log("Pantalla completa no disponible:", error);
+        }
+      }
     }
   });
 });
 
-// CERRAR LIGHTBOX
+// Cerrar lightbox
+async function closeLightbox() {
+  lightboxVideo.pause();
+  lightboxVideo.currentTime = 0;
 
-function closeLightbox() {
   lightbox.classList.remove("active");
 
-  lightboxVideo.pause();
-  lightboxVideo.onloadedmetadata = null;
+  if (document.fullscreenElement) {
+    await document.exitFullscreen();
+  }
+
   lightboxVideo.removeAttribute("src");
   lightboxVideo.load();
 
   lightboxGif.removeAttribute("src");
-
-  lightboxVideo.style.display = "none";
-  lightboxGif.style.display = "none";
 }
 
+// Botón cerrar
 lightboxClose.addEventListener("click", closeLightbox);
 
-lightbox.addEventListener("click", event => {
-  if (event.target === lightbox) {
+// Cerrar al pulsar ESC
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && !document.fullscreenElement) {
     closeLightbox();
   }
 });
 
-document.addEventListener("keydown", event => {
-  if (event.key === "Escape") {
+// Si se sale de pantalla completa
+document.addEventListener("fullscreenchange", () => {
+  if (!document.fullscreenElement && lightbox.classList.contains("active")) {
     closeLightbox();
   }
 });
