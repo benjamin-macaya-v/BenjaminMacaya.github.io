@@ -96,38 +96,26 @@ function quaternionToCSS(q) {
 // ==================================
 
 photos.forEach((photo, i) => {
-  const [x, y, z] = positions[i];
-  photos.forEach((photo, i) => {
-  const [x, y, z] = positions[i];
-
-  photo.style.transform = `
-    translate(-50%, -50%)
-    translate3d(${x}px, ${y}px, ${z}px)
-  `;
-
   const media = photo.querySelector("img, video");
 
-  if (media) {
-    media.draggable = false;
+  if (!media) return;
 
-    media.addEventListener("dragstart", event => {
-      event.preventDefault();
-    });
-  }
-});
+  media.draggable = false;
 
-  photo.style.transform = `
-    translate(-50%, -50%)
-    translate3d(${x}px, ${y}px, ${z}px)
-  `;
-
-  img.style.transform = `scale(${sizes[i]})`;
-
-  img.draggable = false;
-
-  img.addEventListener("dragstart", event => {
+  media.addEventListener("dragstart", event => {
     event.preventDefault();
   });
+
+  // Reproducción automática de los videos
+  if (media.tagName === "VIDEO") {
+    media.muted = true;
+    media.loop = true;
+    media.playsInline = true;
+
+    media.play().catch(error => {
+      console.log("No se pudo iniciar el video:", error);
+    });
+  }
 });
 
 // ==================================
