@@ -2,8 +2,7 @@ const collage = document.querySelector(".collage");
 const world = document.querySelector("#world");
 const photos = [...document.querySelectorAll(".photo-slot")];
 
-let rotationX = -10;
-let rotationY = -20;
+let rotation = { x: 0, y: 0, z: 0, w: 1 };
 
 let velocityX = 0;
 let velocityY = 0;
@@ -12,7 +11,6 @@ let dragging = false;
 let previousX = 0;
 let previousY = 0;
 
-// Posiciones de la nube orbital
 const positions = [
   [-250, -100, 100],
   [100, -190, -120],
@@ -27,11 +25,46 @@ const positions = [
 const sizes = [1, 0.8, 1.15, 0.9, 1.1, 0.85, 1, 0.95];
 const angles = [-8, 12, -5, 9, -12, 6, 15, -7];
 
-// Distribuir fotografías
+function multiply(a, b) {
+  return {
+    w: a.w*b.w - a.x*b.x - a.y*b.y - a.z*b.z,
+    x: a.w*b.x + a.x*b.w + a.y*b.z - a.z*b.y,
+    y: a.w*b.y - a.x*b.z + a.y*b.w + a.z*b.x,
+    z: a.w*b.z + a.x*b.y - a.y*b.x + a.z*b.w
+  };
+}
+
+function axisRotation(axis, angle) {
+  const half = angle / 2;
+  const s = Math.sin(half);
+
+  return {
+    w: Math.cos(half),
+    x: axis === "x" ? s : 0,
+    y: axis === "y" ? s : 0,
+    z: axis === "z" ? s : 0
+  };
+}
+
+function rotateWorld(dx, dy) {
+  const horizontal = axisRotation("y", dx);
+  const vertical = axisRotation("x", dy);
+
+  rotation = multiply(horizontal, rotation);
+  rotation = multiply(rotation, vertical);
+
+  const length = Math.hypot(
+    rotation.x, rotation.y, rotation.z, rotation.w
+  );
+
+  rotation.x /= length;
+  rotation.y /= length;
+  rotation.z /= length;
+  rotation.w /= length;
+}
+
 photos.forEach((photo, i) => {
   const [x, y, z] = positions[i];
-
-  photo.dataset.depth = z;
 
   photo.style.transform = `
     translate(-50%, -50%)
@@ -40,41 +73,45 @@ photos.forEach((photo, i) => {
 
   photo.style.zIndex = Math.round(z + 500);
 
-  // Orientación decorativa fija respecto a la cámara
   photo.querySelector("img").style.transform = `
     rotateZ(${angles[i]}deg)
     scale(${sizes[i]})
   `;
+
+  const img = photo.querySelector("img");
+  img.draggable = false;
+  img.addEventListener("dragstart", e => e.preventDefault());
 });
 
-// Rotación del mundo
 function updateWorld() {
+  const { x, y, z, w } = rotation;
+
   world.style.transform = `
-    rotateX(${rotationX}deg)
-    rotateY(${rotationY}deg)
+    matrix3d(
+      ${1-2*(y*y+z*z)}, ${2*(x*y+z*w)}, ${2*(x*z-y*w)}, 0,
+      ${2*(x*y-z*w)}, ${1-2*(x*x+z*z)}, ${2*(y*z+x*w)}, 0,
+      ${2*(x*z+y*w)}, ${2*(y*z-x*w)}, ${1-2*(x*x+y*y)}, 0,
+      0, 0, 0, 1
+    )
   `;
 
-  // Compensar la rotación para que cada foto mire a cámara
-  photos.forEach((photo) => {
+  photos.forEach((photo, i) => {
+    const [px, py, pz] = positions[i];
+
     photo.style.transform = `
       translate(-50%, -50%)
-      translate3d(
-        ${positions[photos.indexOf(photo)][0]}px,
-        ${positions[photos.indexOf(photo)][1]}px,
-        ${positions[photos.indexOf(photo)][2]}px
-      )
-      rotateY(${-rotationY}deg)
-      rotateX(${-rotationX}deg)
+      translate3d(${px}px, ${py}px, ${pz}px)
+      rotate3d(${x}, ${y}, ${z}, ${2*Math.acos(w)}rad)
     `;
   });
 }
 
 updateWorld();
 
-// Arrastrar el universo
-collage.addEventListener("pointerdown", (event) => {
-  dragging = true;
+collage.addEventListener("pointerdown", event => {
+  if (event.button !== 0) return;
 
+  dragging = true;
   previousX = event.clientX;
   previousY = event.clientY;
 
@@ -85,19 +122,19 @@ collage.addEventListener("pointerdown", (event) => {
   collage.setPointerCapture(event.pointerId);
 });
 
-collage.addEventListener("pointermove", (event) => {
+collage.addEventListener("pointermove", event => {
   if (!dragging) return;
 
   const dx = event.clientX - previousX;
   const dy = event.clientY - previousY;
 
-  rotationY += dx * 0.4;
-  rotationX -= dy * 0.3;
+  const horizontal = dx * 0.005;
+  const vertical = dy * 0.005;
 
-  rotationX = Math.max(-80, Math.min(80, rotationX));
+  rotateWorld(horizontal, vertical);
 
-  velocityY = dx * 0.12;
-  velocityX = -dy * 0.09;
+  velocityX = vertical * 0.12;
+  velocityY = horizontal * 0.12;
 
   previousX = event.clientX;
   previousY = event.clientY;
@@ -113,41 +150,23 @@ function stopDrag() {
 collage.addEventListener("pointerup", stopDrag);
 collage.addEventListener("pointercancel", stopDrag);
 
-// Inercia
+collage.addEventListener("selectstart", e => e.preventDefault());
+collage.addEventListener("dragstart", e => e.preventDefault());
+
 function animate() {
   if (!dragging) {
-    rotationY += velocityY;
-    rotationX += velocityX;
+    rotateWorld(velocityY, velocityX);
 
     velocityX *= 0.96;
     velocityY *= 0.96;
 
-    if (Math.abs(velocityX) < 0.001) velocityX = 0;
-    if (Math.abs(velocityY) < 0.001) velocityY = 0;
+    if (Math.abs(velocityX) < 0.00001) velocityX = 0;
+    if (Math.abs(velocityY) < 0.00001) velocityY = 0;
 
     updateWorld();
   }
 
   requestAnimationFrame(animate);
 }
-
-// Desactivar completamente el arrastre nativo de imágenes
-document.querySelectorAll(".photo-slot img").forEach((img) => {
-  img.draggable = false;
-
-  img.addEventListener("dragstart", (event) => {
-    event.preventDefault();
-  });
-});
-
-// Evitar selección de elementos durante el movimiento
-collage.addEventListener("selectstart", (event) => {
-  event.preventDefault();
-});
-
-// Evitar arrastre nativo dentro del espacio
-collage.addEventListener("dragstart", (event) => {
-  event.preventDefault();
-});
 
 animate();
