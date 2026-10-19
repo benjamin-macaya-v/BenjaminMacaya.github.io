@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Benjamín Macaya — Video</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    .video-page {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #mainVideo {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #000;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 25px;
+      left: 25px;
+
+      color: white;
+      text-decoration: none;
+      font-size: 12px;
+
+      z-index: 10;
+      opacity: 0.8;
+      transition: opacity 0.3s;
+    }
+
+    .back-button:hover {
+      opacity: 1;
+    }
+
+    .fullscreen-button {
+      position: absolute;
+      top: 22px;
+      right: 25px;
+
+      color: white;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.5);
+      padding: 9px 13px;
+
+      font-size: 11px;
+      cursor: pointer;
+      z-index: 10;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <main class="video-page">
+
+    <a href="index.html" class="back-button">
+      ← VOLVER
+    </a>
+
+    <button class="fullscreen-button" id="fullscreenButton">
+      FULLSCREEN ↗
+    </button>
+
+    <video id="mainVideo" controls autoplay playsinline>
+    </video>
+
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const videoFile = params.get("src");
+
+    const video = document.querySelector("#mainVideo");
+    const fullscreenButton = document.querySelector("#fullscreenButton");
+
+    // Cargar video seleccionado
+    if (videoFile) {
+      video.src = videoFile;
+      video.load();
+
+      video.play().catch(() => {
+        console.log("Presiona play para reproducir el video.");
+      });
+    }
+
+    // Pantalla completa
+    fullscreenButton.addEventListener("click", () => {
+      if (video.requestFullscreen) {
+        video.requestFullscreen();
+      } else if (video.webkitEnterFullscreen) {
+        video.webkitEnterFullscreen();
+      }
+    });
+  </script>
+
+</body>
+</html>
