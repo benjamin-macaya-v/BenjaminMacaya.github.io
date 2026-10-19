@@ -2,11 +2,22 @@ const collage = document.querySelector(".collage");
 const world = document.querySelector("#world");
 const photos = [...document.querySelectorAll(".photo-slot")];
 
-if (!collage || !world || photos.length === 0) {
-  console.error("No se encontró la galería 3D.");
-} else {
+// ROTACIÓN 3D
+let rotation = { x: 0, y: 0, z: 0, w: 1 };
 
-// CONFIGURACIÓN
+let velocityX = 0;
+let velocityY = 0;
+
+let dragging = false;
+let previousX = 0;
+let previousY = 0;
+
+// TIEMPO Y VELOCIDAD AUTOMÁTICA
+let lastTime = 0;
+
+const autoRotationSpeed = 0.00008;
+
+// POSICIONES DE LAS FOTOGRAFÍAS
 const positions = [
   [-250, -100, 100],
   [100, -190, -120],
@@ -21,29 +32,7 @@ const positions = [
 const sizes = [1, 0.8, 1.15, 0.9, 1.1, 0.85, 1, 0.95];
 const angles = [-8, 12, -5, 9, -12, 6, 15, -7];
 
-// ROTACIÓN 3D
-let rotation = { x: 0, y: 0, z: 0, w: 1 };
-
-let velocityX = 0;
-let velocityY = 0;
-
-let dragging = false;
-let previousX = 0;
-let previousY = 0;
-
-// ÓRBITAS
-let elapsed = 0;
-let lastTime = 0;
-
-const orbitData = photos.map((photo, i) => ({
-  radiusX: 22 + (i % 3) * 12,
-  radiusY: 18 + (i % 4) * 10,
-  radiusZ: 35 + (i % 3) * 15,
-  speed: 0.00010 + i * 0.000018,
-  phase: i * 1.3
-}));
-
-// CUATERNIONES
+// MULTIPLICACIÓN DE CUATERNIONES
 function multiply(a, b) {
   return {
     w: a.w*b.w - a.x*b.x - a.y*b.y - a.z*b.z,
@@ -53,6 +42,7 @@ function multiply(a, b) {
   };
 }
 
+// ROTACIÓN SOBRE UN EJE
 function axisRotation(axis, angle) {
   const half = angle / 2;
   const s = Math.sin(half);
@@ -65,6 +55,7 @@ function axisRotation(axis, angle) {
   };
 }
 
+// GIRAR EL UNIVERSO
 function rotateWorld(dx, dy) {
   const horizontal = axisRotation("y", dx);
   const vertical = axisRotation("x", dy);
@@ -73,7 +64,10 @@ function rotateWorld(dx, dy) {
   rotation = multiply(rotation, vertical);
 
   const length = Math.hypot(
-    rotation.x, rotation.y, rotation.z, rotation.w
+    rotation.x,
+    rotation.y,
+    rotation.z,
+    rotation.w
   );
 
   rotation.x /= length;
@@ -82,11 +76,29 @@ function rotateWorld(dx, dy) {
   rotation.w /= length;
 }
 
-// CONVERTIR CUATERNIONES A CSS
-function quaternionToMatrix(q) {
-  const { x, y, z, w } = q;
+// PREPARAR FOTOGRAFÍAS
+photos.forEach((photo, i) => {
+  const img = photo.querySelector("img");
 
-  return [
+  photo.style.zIndex = Math.round(positions[i][2] + 500);
+
+  img.style.transform = `
+    rotateZ(${angles[i]}deg)
+    scale(${sizes[i]})
+  `;
+
+  img.draggable = false;
+
+  img.addEventListener("dragstart", event => {
+    event.preventDefault();
+  });
+});
+
+// ACTUALIZAR EL UNIVERSO
+function updateWorld() {
+  const { x, y, z, w } = rotation;
+
+  const matrix = [
     1 - 2*(y*y + z*z),
     2*(x*y + z*w),
     2*(x*z - y*w),
@@ -104,51 +116,20 @@ function quaternionToMatrix(q) {
 
     0, 0, 0, 1
   ];
-}
-
-// PREPARAR FOTOGRAFÍAS
-photos.forEach((photo, i) => {
-  const img = photo.querySelector("img");
-
-  img.draggable = false;
-
-  img.style.transform = `
-    rotateZ(${angles[i]}deg)
-    scale(${sizes[i]})
-  `;
-
-  img.addEventListener("dragstart", e => e.preventDefault());
-});
-
-// ACTUALIZAR ESCENA
-function updateWorld() {
-
-  const matrix = quaternionToMatrix(rotation);
 
   world.style.transform = `matrix3d(${matrix.join(",")})`;
 
   photos.forEach((photo, i) => {
-
     const [px, py, pz] = positions[i];
-    const orbit = orbitData[i];
 
-    const t = elapsed * orbit.speed + orbit.phase;
-
-    // Movimiento independiente en 3 dimensiones
-    const x = px + Math.cos(t) * orbit.radiusX;
-    const y = py + Math.sin(t) * orbit.radiusY;
-    const z = pz + Math.sin(t * 0.7) * orbit.radiusZ;
-
-    // Posición orbital
     photo.style.transform = `
       translate(-50%, -50%)
-      translate3d(${x}px, ${y}px, ${z}px)
+      translate3d(${px}px, ${py}px, ${pz}px)
     `;
-
   });
 }
 
-// ARRASTRE
+// ARRASTRAR CON EL MOUSE
 collage.addEventListener("pointerdown", event => {
   if (event.button !== 0) return;
 
@@ -190,21 +171,26 @@ function stopDrag() {
 collage.addEventListener("pointerup", stopDrag);
 collage.addEventListener("pointercancel", stopDrag);
 
-collage.addEventListener("selectstart", e => e.preventDefault());
-collage.addEventListener("dragstart", e => e.preventDefault());
+collage.addEventListener("selectstart", event => {
+  event.preventDefault();
+});
 
-// ANIMACIÓN
+collage.addEventListener("dragstart", event => {
+  event.preventDefault();
+});
+
+// ANIMACIÓN CONTINUA
 function animate(timestamp) {
-
   if (!lastTime) lastTime = timestamp;
 
   const delta = Math.min(timestamp - lastTime, 50);
   lastTime = timestamp;
 
-  elapsed += delta;
-
   if (!dragging) {
+    // Giro automático horizontal
+    rotateWorld(autoRotationSpeed * delta, 0);
 
+    // Inercia del movimiento manual
     rotateWorld(velocityY, velocityX);
 
     velocityX *= 0.96;
@@ -219,6 +205,6 @@ function animate(timestamp) {
   requestAnimationFrame(animate);
 }
 
+// INICIAR
+updateWorld();
 requestAnimationFrame(animate);
-
-}
