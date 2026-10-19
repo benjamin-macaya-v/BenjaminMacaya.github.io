@@ -244,7 +244,29 @@ const lightboxClose = document.querySelector("#lightboxClose");
 
 if (lightbox && lightboxVideo && lightboxGif && lightboxClose) {
 
-  // Abrir medios
+  // FUNCIÓN PARA CERRAR EL OVERLAY
+
+  function closeLightbox() {
+
+    lightbox.classList.remove("active");
+
+    lightboxVideo.pause();
+    lightboxVideo.removeAttribute("src");
+    lightboxVideo.load();
+
+    lightboxGif.removeAttribute("src");
+
+    lightboxVideo.style.display = "none";
+    lightboxGif.style.display = "none";
+
+    if (document.fullscreenElement === lightbox) {
+      document.exitFullscreen().catch(() => {});
+    }
+  }
+
+
+  // ABRIR VIDEOS Y GIFS
+
   photos.forEach(photo => {
 
     const media = photo.querySelector("video, img");
@@ -258,15 +280,16 @@ if (lightbox && lightboxVideo && lightboxGif && lightboxClose) {
 
     if (!isVideo && !isGif) return;
 
-    media.style.pointerEvents = "auto";
-    media.style.cursor = "pointer";
-
     media.addEventListener("click", event => {
 
+      event.preventDefault();
       event.stopPropagation();
 
-      // Mostrar overlay
       lightbox.classList.add("active");
+
+      // =========================
+      // ABRIR VIDEO
+      // =========================
 
       if (isVideo) {
 
@@ -274,35 +297,39 @@ if (lightbox && lightboxVideo && lightboxGif && lightboxClose) {
         lightboxVideo.style.display = "block";
 
         const source = media.querySelector("source");
-        const videoURL = source ? source.src : media.currentSrc || media.src;
+
+        const videoURL = source
+          ? source.src
+          : media.currentSrc || media.src;
 
         lightboxVideo.pause();
-        lightboxVideo.removeAttribute("src");
-
         lightboxVideo.src = videoURL;
+
         lightboxVideo.muted = false;
         lightboxVideo.volume = 1;
         lightboxVideo.controls = true;
-        lightboxVideo.currentTime = 0;
+        lightboxVideo.playsInline = true;
 
         lightboxVideo.load();
 
-        // Iniciar reproducción
-        const playPromise = lightboxVideo.play();
-
-        if (playPromise) {
-          playPromise.catch(error => {
-            console.log("Presiona play para iniciar el video:", error);
-          });
-        }
-
-        // Solicitar pantalla completa inmediatamente
+        // Intentar pantalla completa
         if (lightbox.requestFullscreen) {
           lightbox.requestFullscreen().catch(error => {
             console.log("Pantalla completa no disponible:", error);
           });
         }
+
+        // Reproducir video
+        lightboxVideo.play().catch(error => {
+          console.log("Pulsa play para escuchar el video:", error);
+        });
+
       }
+
+
+      // =========================
+      // ABRIR GIF
+      // =========================
 
       if (isGif) {
 
@@ -312,12 +339,13 @@ if (lightbox && lightboxVideo && lightboxGif && lightboxClose) {
         lightboxGif.style.display = "block";
         lightboxGif.src = media.src;
 
-        // Solicitar pantalla completa
+        // Intentar pantalla completa
         if (lightbox.requestFullscreen) {
           lightbox.requestFullscreen().catch(error => {
             console.log("Pantalla completa no disponible:", error);
           });
         }
+
       }
 
     });
@@ -325,46 +353,35 @@ if (lightbox && lightboxVideo && lightboxGif && lightboxClose) {
   });
 
 
-  // Cerrar overlay
-  function closeLightbox() {
+  // BOTÓN CERRAR
 
-    lightbox.classList.remove("active");
-
-    lightboxVideo.pause();
-    lightboxVideo.removeAttribute("src");
-    lightboxVideo.load();
-
-    lightboxGif.removeAttribute("src");
-    lightboxGif.style.display = "none";
-    lightboxVideo.style.display = "none";
-
-    if (document.fullscreenElement === lightbox) {
-      document.exitFullscreen().catch(error => {
-        console.log("No se pudo salir de pantalla completa:", error);
-      });
-    }
-  }
-
-
-  // Botón de cierre
   lightboxClose.addEventListener("click", closeLightbox);
 
 
-  // Cerrar con ESC
+  // CERRAR CON ESC
+
   document.addEventListener("keydown", event => {
-    if (event.key === "Escape" && lightbox.classList.contains("active")) {
+
+    if (
+      event.key === "Escape" &&
+      lightbox.classList.contains("active") &&
+      !document.fullscreenElement
+    ) {
       closeLightbox();
     }
+
   });
 
 
-  // Detectar salida de pantalla completa
+  // DETECTAR SALIDA DE PANTALLA COMPLETA
+
   document.addEventListener("fullscreenchange", () => {
 
     if (
       document.fullscreenElement !== lightbox &&
       lightbox.classList.contains("active")
     ) {
+
       lightbox.classList.remove("active");
 
       lightboxVideo.pause();
@@ -372,6 +389,10 @@ if (lightbox && lightboxVideo && lightboxGif && lightboxClose) {
       lightboxVideo.load();
 
       lightboxGif.removeAttribute("src");
+
+      lightboxVideo.style.display = "none";
+      lightboxGif.style.display = "none";
+
     }
 
   });
