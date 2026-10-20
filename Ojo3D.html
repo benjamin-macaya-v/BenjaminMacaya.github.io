@@ -92,6 +92,7 @@
 
     .project-info {
       padding-top: 5px;
+      min-width: 0;
     }
 
     .project-title {
@@ -105,13 +106,13 @@
       line-height: 1.4;
       margin-bottom: 28px;
     }
-    
+
     .project-descriptionProductora {
       color: #999;
       font-size: 20px;
       line-height: 1.4;
       margin-bottom: 28px;
-    }    
+    }
 
     .project-details {
       display: grid;
@@ -134,7 +135,7 @@
     }
 
     /* =========================
-       GALERÍA DE IMÁGENES
+       GALERÍA
     ========================= */
 
     .project-gallery {
@@ -142,19 +143,31 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
       align-items: start;
+      width: 100%;
+      min-width: 0;
     }
 
     .gallery-item {
-      width: 100%;
-      height: auto;
       display: block;
+      width: 100%;
+      min-width: 0;
+      height: auto;
     }
 
-    .gallery-item img {
+    .gallery-item a {
       display: block;
       width: 100%;
       height: auto;
+    }
+
+    .gallery-item img,
+    .gallery-item video {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-width: 100%;
       object-fit: contain;
+      object-position: center;
       user-select: none;
       -webkit-user-drag: none;
     }
@@ -238,12 +251,11 @@
         font-size: 19px;
         margin-bottom: 18px;
       }
-      
+
       .project-descriptionProductora {
         font-size: 17px;
         margin-bottom: 18px;
       }
-
 
       .project-details {
         margin-top: 35px;
@@ -317,7 +329,6 @@
 
   </header>
 
-
   <!-- CONTENIDO -->
 
   <main class="project-container">
@@ -363,43 +374,41 @@
 
     </section>
 
-
     <!-- GALERÍA -->
 
     <section class="project-gallery">
 
       <div class="gallery-item">
         <a href="video.html?src=images%2FPortadaOJO.mp4">
-          <video autoplay muted loop playsinline>
+          <video autoplay muted loop playsinline preload="metadata">
             <source src="images/PortadaOJO.mp4" type="video/mp4">
           </video>
         </a>
       </div>
 
       <div class="gallery-item">
-        <a href="imagen.html?src=images/OjoDios (1).png">
-         <img src="images/OjoDios (1).png" alt="Pintura digital 2">
+        <a href="imagen.html?src=images%2FOjoDios%20%281%29.png">
+          <img src="images/OjoDios (1).png" alt="Pintura digital 2">
         </a>
       </div>
 
       <div class="gallery-item">
-        <a href="imagen.html?src=images/OjoDios (2).png">
-         <img src="images/OjoDios (2).png" alt="Pintura digital 3">
+        <a href="imagen.html?src=images%2FOjoDios%20%282%29.png">
+          <img src="images/OjoDios (2).png" alt="Pintura digital 3">
         </a>
       </div>
 
       <div class="gallery-item">
         <a href="video.html?src=images%2FOjoDios_2.mp4">
-          <video autoplay muted loop playsinline>
+          <video autoplay muted loop playsinline preload="metadata">
             <source src="images/OjoDios_2.mp4" type="video/mp4">
           </video>
         </a>
       </div>
-      
+
     </section>
 
   </main>
-
 
   <!-- FOOTER -->
 
