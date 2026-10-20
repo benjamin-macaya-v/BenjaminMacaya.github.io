@@ -1,25 +1,6 @@
-
 const collage = document.querySelector(".collage");
 const world = document.querySelector("#world");
 const photos = [...document.querySelectorAll(".photo-slot")];
-
-// Zoom de la nube
-let zoom = 1;
-
-const minZoom = 0.45;
-const maxZoom = 1.8;
-const zoomSpeed = 0.001;
-
-collage.addEventListener("wheel", (event) => {
-  event.preventDefault();
-
-  zoom += event.deltaY * -zoomSpeed;
-
-  // Limitar el zoom
-  zoom = Math.min(maxZoom, Math.max(minZoom, zoom));
-
-  world.style.scale = zoom;
-}, { passive: false });
 
 // Comprobar que existen los elementos necesarios
 if (!collage || !world) {
@@ -27,8 +8,14 @@ if (!collage || !world) {
 } else {
 
 // ==================================
-// CONFIGURACIÓN DE LA NUBE 3D
+// CONFIGURACIÓN GENERAL
 // ==================================
+
+const mobileMode = window.matchMedia("(max-width: 700px), (pointer: coarse)").matches;
+
+let zoom = 1;
+let minZoom = 0.45;
+let maxZoom = 1.8;
 
 let rotation = { x: 0, y: 0, z: 0, w: 1 };
 
@@ -40,7 +27,66 @@ let lastTime = 0;
 let velocityX = 0;
 let velocityY = 0;
 
-const autoSpeed = 0.00010;
+let suppressClick = false;
+
+const activePointers = new Map();
+
+let pinchStartDistance = 0;
+let pinchStartZoom = 1;
+
+const autoSpeed = mobileMode ? 0.00005 : 0.00010;
+
+// ==================================
+// ZOOM INICIAL PARA CELULARES
+// ==================================
+
+function getMobileFitZoom() {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  // Dimensiones aproximadas de toda la nube
+  const cloudWidth = 2424;
+  const cloudHeight = 1502;
+
+  const fitWidth = (width * 0.90) / cloudWidth;
+  const fitHeight = (height * 0.76) / cloudHeight;
+
+  return Math.min(fitWidth, fitHeight);
+}
+
+function applyZoom() {
+  world.style.scale = zoom;
+}
+
+if (mobileMode) {
+  const fitZoom = getMobileFitZoom();
+
+  zoom = fitZoom;
+  minZoom = fitZoom * 0.65;
+  maxZoom = fitZoom * 3.5;
+
+  applyZoom();
+}
+
+// ==================================
+// ZOOM CON RUEDA EN COMPUTADOR
+// ==================================
+
+collage.addEventListener("wheel", (event) => {
+  if (mobileMode) return;
+
+  event.preventDefault();
+
+  zoom += event.deltaY * -0.001;
+
+  zoom = Math.min(maxZoom, Math.max(minZoom, zoom));
+
+  applyZoom();
+}, { passive: false });
+
+// ==================================
+// POSICIONES DE LA NUBE 3D
+// ==================================
 
 const positions = photos.map((photo, i) => {
   const total = photos.length;
@@ -50,8 +96,8 @@ const positions = photos.map((photo, i) => {
   const radius = Math.sqrt(1 - y * y);
   const angle = goldenAngle * i;
 
-  // Distribución orgánica, más ancha y menos esférica
-  const irregular = 1 + 0.22 * Math.sin(i * 2.4) + 0.12 * Math.cos(i * 1.7);
+  const irregular =
+    1 + 0.22 * Math.sin(i * 2.4) + 0.12 * Math.cos(i * 1.7);
 
   const x = Math.cos(angle) * radius;
   const z = Math.sin(angle) * radius;
@@ -130,7 +176,7 @@ function quaternionToCSS(q) {
 }
 
 // ==================================
-// PREPARAR VIDEOS E IMÁGENES
+// PREPARAR IMÁGENES Y VIDEOS
 // ==================================
 
 photos.forEach(photo => {
@@ -187,17 +233,77 @@ function updateWorld() {
 }
 
 // ==================================
-// CONTROL CON EL MOUSE
+// FUNCIONES PARA EL GESTO DE PINZA
+// ==================================
+
+function getPointerDistance() {
+  const points = [...activePointers.values()];
+
+  if (points.length < 2) return 0;
+
+  const dx = points[0].x - points[1].x;
+  const dy = points[0].y - points[1].y;
+
+  return Math.hypot(dx, dy);
+}
+
+function updatePinchZoom() {
+  const distance = getPointerDistance();
+
+  if (!distance || !pinchStartDistance) return;
+
+  const ratio = distance / pinchStartDistance;
+
+  zoom = Math.min(
+    maxZoom,
+    Math.max(minZoom, pinchStartZoom * ratio)
+  );
+
+  applyZoom();
+}
+
+// ==================================
+// CONTROL CON EL MOUSE Y EL TÁCTIL
 // ==================================
 
 collage.addEventListener("pointerdown", event => {
 
-  // No iniciar el arrastre al hacer clic en medios o enlaces
-  if (event.target.closest(".photo-slot a, .photo-slot video, .photo-slot img")) {
+  // En escritorio, las imágenes siguen siendo clicables
+  if (!mobileMode &&
+      event.target.closest(".photo-slot a, .photo-slot video, .photo-slot img")) {
     return;
   }
 
-  if (event.button !== 0) return;
+  if (!mobileMode && event.button !== 0) return;
+
+  if (mobileMode) {
+    activePointers.set(event.pointerId, {
+      x: event.clientX,
+      y: event.clientY
+    });
+
+    collage.setPointerCapture(event.pointerId);
+
+    if (activePointers.size === 1) {
+      dragging = true;
+
+      previousX = event.clientX;
+      previousY = event.clientY;
+
+      velocityX = 0;
+      velocityY = 0;
+    }
+
+    if (activePointers.size === 2) {
+      dragging = false;
+
+      pinchStartDistance = getPointerDistance();
+      pinchStartZoom = zoom;
+    }
+
+    collage.classList.add("dragging");
+    return;
+  }
 
   dragging = true;
 
@@ -213,13 +319,51 @@ collage.addEventListener("pointerdown", event => {
 });
 
 collage.addEventListener("pointermove", event => {
+
+  if (mobileMode) {
+    if (!activePointers.has(event.pointerId)) return;
+
+    activePointers.set(event.pointerId, {
+      x: event.clientX,
+      y: event.clientY
+    });
+
+    if (activePointers.size >= 2) {
+      updatePinchZoom();
+      return;
+    }
+
+    if (!dragging) return;
+
+    const dx = event.clientX - previousX;
+    const dy = event.clientY - previousY;
+
+    const horizontal = dx * 0.003;
+    const vertical = dy * 0.003;
+
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+      suppressClick = true;
+    }
+
+    rotateWorld(horizontal, vertical);
+
+    velocityX = horizontal * 0.10;
+    velocityY = vertical * 0.10;
+
+    previousX = event.clientX;
+    previousY = event.clientY;
+
+    updateWorld();
+    return;
+  }
+
   if (!dragging) return;
 
   const dx = event.clientX - previousX;
   const dy = event.clientY - previousY;
 
-  const horizontal = dx * 0.005;
-  const vertical = dy * 0.005;
+  const horizontal = dx * 0.003;
+  const vertical = dy * 0.003;
 
   rotateWorld(horizontal, vertical);
 
@@ -232,18 +376,71 @@ collage.addEventListener("pointermove", event => {
   updateWorld();
 });
 
-function stopDrag() {
+// ==================================
+// FINALIZAR ARRASTRE
+// ==================================
+
+function stopDrag(event) {
+  if (mobileMode) {
+    activePointers.delete(event.pointerId);
+
+    if (activePointers.size === 1) {
+      const remaining = [...activePointers.values()][0];
+
+      previousX = remaining.x;
+      previousY = remaining.y;
+
+      pinchStartDistance = 0;
+      dragging = true;
+    } else if (activePointers.size === 0) {
+      dragging = false;
+      pinchStartDistance = 0;
+    } else {
+      dragging = false;
+    }
+
+    if (activePointers.size === 0) {
+      collage.classList.remove("dragging");
+    }
+
+    return;
+  }
+
   dragging = false;
   collage.classList.remove("dragging");
 }
 
 collage.addEventListener("pointerup", stopDrag);
 collage.addEventListener("pointercancel", stopDrag);
-
 collage.addEventListener("lostpointercapture", stopDrag);
+
+collage.addEventListener("click", event => {
+  if (!mobileMode || !suppressClick) return;
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  suppressClick = false;
+}, true);
 
 collage.addEventListener("dragstart", event => {
   event.preventDefault();
+});
+
+// ==================================
+// AJUSTAR ZOOM SI CAMBIA LA PANTALLA
+// ==================================
+
+window.addEventListener("resize", () => {
+  if (!mobileMode) return;
+
+  const fitZoom = getMobileFitZoom();
+
+  minZoom = fitZoom * 0.65;
+  maxZoom = fitZoom * 3.5;
+
+  zoom = Math.max(minZoom, Math.min(maxZoom, zoom));
+  applyZoom();
 });
 
 // ==================================
@@ -256,17 +453,15 @@ function animate(timestamp) {
   const delta = Math.min(timestamp - lastTime, 50);
   lastTime = timestamp;
 
-  if (!dragging) {
+  if (!dragging && activePointers.size === 0) {
 
-    // Rotación automática
     rotateWorld(autoSpeed * delta, 0);
 
-    // Inercia después de arrastrar
     if (velocityX !== 0 || velocityY !== 0) {
       rotateWorld(velocityX, velocityY);
 
-      velocityX *= 0.96;
-      velocityY *= 0.96;
+      velocityX *= mobileMode ? 0.93 : 0.96;
+      velocityY *= mobileMode ? 0.93 : 0.96;
 
       if (Math.abs(velocityX) < 0.00001) velocityX = 0;
       if (Math.abs(velocityY) < 0.00001) velocityY = 0;
