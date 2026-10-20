@@ -1,1 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>KOYAK — Benjamín Macaya</title>
+
+  <style>
+    /* =========================
+       CONFIGURACIÓN GENERAL
+    ========================= */
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      background: #050505;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #050505;
+      color: white;
+      font-family: Candara, "Segoe UI", sans-serif;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    /* =========================
+       ENCABEZADO
+    ========================= */
+
+    .project-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .close-button {
+      color: white;
+      text-decoration: none;
+      font-family: Arial, sans-serif;
+      font-size: 48px;
+      font-weight: 300;
+      line-height: 1;
+      pointer-events: auto;
+      transition: opacity 0.2s ease;
+    }
+
+    .close-button:hover {
+      opacity: 0.5;
+    }
+
+    .site-name {
+      color: white;
+      font-size: 19px;
+      font-weight: 600;
+      text-decoration: none !important;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .site-name:link,
+    .site-name:visited,
+    .site-name:hover,
+    .site-name:active,
+    .site-name:focus {
+      color: white;
+      text-decoration: none !important;
+    }
+
+    /* =========================
+       CONTENIDO DEL PROYECTO
+    ========================= */
+
+    .project-container {
+      width: 100%;
+      max-width: 2000px;
+      margin: 0 auto;
+      padding: 112px 5vw 100px;
+      display: grid;
+      grid-template-columns: 0.85fr 1.9fr;
+      gap: 55px;
+      align-items: start;
+    }
+
+    /* =========================
+       INFORMACIÓN
+    ========================= */
+
+    .project-info {
+      padding-top: 5px;
+      min-width: 0;
+    }
+
+    .project-title {
+      font-size: 30px;
+      font-weight: 600;
+      margin-bottom: 48px;
+    }
+
+    .project-title-link,
+    .project-title-link:link,
+    .project-title-link:visited,
+    .project-title-link:hover,
+    .project-title-link:active,
+    .project-title-link:focus {
+      color: white !important;
+      text-decoration: none !important;
+      outline: none;
+    }
+
+    .project-title-link h1 {
+      color: white !important;
+      text-decoration: none !important;
+    }
+
+    .project-description {
+      font-size: 22px;
+      line-height: 1.4;
+      margin-bottom: 28px;
+    }
+
+    .project-descriptionProductora {
+      color: #999;
+      font-size: 20px;
+      line-height: 1.4;
+      margin-bottom: 28px;
+    }
+
+    .project-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 25px;
+      row-gap: 30px;
+      margin-top: 65px;
+    }
+
+    .detail-label {
+      display: block;
+      color: #999;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+
+    .detail-value {
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    /* =========================
+       GALERÍA
+    ========================= */
+
+    .project-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      align-items: start;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .gallery-item {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      height: auto;
+    }
+
+    .gallery-item a {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .gallery-item img,
+    .gallery-item video {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-width: 100%;
+      object-fit: contain;
+      object-position: center;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    .site-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 12px 22px;
+      display: flex;
+      align-items: center;
+      z-index: 100;
+      background: linear-gradient(
+        to top,
+        #050505 60%,
+        transparent
+      );
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-left a:not(.email-link) {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-decoration: none;
+    }
+
+    .footer-left svg {
+      width: 32px;
+      height: 32px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .email-link {
+      color: white;
+      font-size: 19px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-left: 3px;
+    }
+
+    .footer-left a:hover {
+      opacity: 0.65;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================= */
+
+    @media (max-width: 800px) {
+
+      .project-container {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding: 100px 22px 100px;
+      }
+
+      .project-title {
+        font-size: 26px;
+        margin-bottom: 25px;
+      }
+
+      .project-description {
+        font-size: 19px;
+        margin-bottom: 18px;
+      }
+
+      .project-descriptionProductora {
+        font-size: 17px;
+        margin-bottom: 18px;
+      }
+
+      .project-details {
+        margin-top: 35px;
+      }
+
+      .project-gallery {
+        gap: 8px;
+      }
+
+      .site-name {
+        font-size: 16px;
+      }
+
+      .close-button {
+        font-size: 42px;
+      }
+    }
+
+    @media (max-width: 480px) {
+
+      .project-gallery {
+        grid-template-columns: 1fr;
+      }
+
+      .project-container {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .project-header {
+        padding: 14px 16px;
+      }
+
+      .email-link {
+        font-size: 14px;
+      }
+
+      .footer-left {
+        gap: 8px;
+      }
+
+      .footer-left a:not(.email-link),
+      .footer-left svg {
+        width: 27px;
+        height: 27px;
+      }
+
+      .site-footer {
+        padding: 10px 14px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- ENCABEZADO -->
+
+  <header class="project-header">
+
+    <a href="index.html"
+       class="close-button"
+       aria-label="Volver al portfolio">
+      ×
+    </a>
+
+    <a href="about.html" class="site-name">
+      benjamín macaya velásquez
+    </a>
+
+  </header>
+
+  <!-- CONTENIDO -->
+
+  <main class="project-container">
+
+    <!-- INFORMACIÓN DEL PROYECTO -->
+
+    <section class="project-info">
+
+      <h1 class="project-title">
+        KOYAK
+      </h1>
+
+      <p class="project-descriptionProductora">
+       Productora KOYAK
+      </p>
+
+      <p class="project-description">
+        Dirigido por Delory Espinoza
+      </p>
+
+      <div class="project-details">
+
+        <div>
+          <span class="detail-label">Año</span>
+          <p class="detail-value">2026</p>
+        </div>
+
+        <div>
+          <span class="detail-label">Estado</span>
+          <p class="detail-value">PreProducción</p>
+        </div>
+
+        <div>
+          <span class="detail-label">Programas</span>
+          <p class="detail-value">ToonBoom Harmony, Photoshop, Blender</p>
+        </div>
+
+        <div>
+          <span class="detail-label">Créditos</span>
+          <p class="detail-value">Animador, guion, storyboard</p>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- GALERÍA -->
+
+    <section class="project-gallery">
+
+      <div class="gallery-item">
+        <a href="imagen.html?src=images/PortadaKoyak.png">
+         <img src="images/PortadaKoyak.png" alt="Pintura digital 1">
+        </a>
+      </div>
+
+      <div class="gallery-item">
+        <a href="imagen.html?src=images/koyak (2).png">
+         <img src="images/koyak (2).png" alt="Pintura digital 1">
+        </a>
+      </div>
+
+      <div class="gallery-item">
+        <a href="imagen.html?src=images/koyak (1).png">
+         <img src="images/koyak (1).png" alt="Pintura digital 1">
+        </a>
+      </div>
+      
+      <div class="gallery-item">
+        <a href="imagen.html?src=images/koyak (5).png">
+         <img src="images/koyak (5).png" alt="Pintura digital 1">
+        </a>
+      </div>
+      
+      <div class="gallery-item">
+        <a href="imagen.html?src=images/koyak (3).png">
+         <img src="images/koyak (3).png" alt="Pintura digital 1">
+        </a>
+      </div>
+      
+      <div class="gallery-item">
+        <a href="imagen.html?src=images/koyak (4).png">
+         <img src="images/koyak (4).png" alt="Pintura digital 1">
+        </a>
+      </div>
+            
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+
+  <footer class="site-footer">
+
+    <div class="footer-left">
+
+      <a href="https://github.com/TU-USUARIO"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="GitHub">
+
+        <svg viewBox="0 0 32 32">
+          <path d="M3.5 9.5V6.5 Q3.5 5 5 5H12 L15 8H26 Q28 8 28 10V12"/>
+          <path d="M3 13 Q3 11.5 5 11.5H29 L26 25 Q25.7 27 23.5 27H3.5 Q2 27 2.5 25Z"/>
+          <path d="M3.5 15H27"/>
+        </svg>
+
+      </a>
+
+      <a href="https://www.instagram.com/TU-USUARIO/"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="Instagram">
+
+        <svg viewBox="0 0 24 24">
+          <rect x="3" y="3" width="18" height="18" rx="5"/>
+          <circle cx="12" cy="12" r="4"/>
+          <circle cx="17.5" cy="6.5" r="1"
+                  fill="currentColor" stroke="none"/>
+        </svg>
+
+      </a>
+
+      <a class="email-link"
+         href="https://mail.google.com/mail/u/0/?fs=1&to=benjamin.macaya.v@gmail.com&su=Saludos&tf=cm"
+         target="_blank"
+         rel="noopener noreferrer">
+        benjamin.macaya.v@gmail.com
+      </a>
+
+    </div>
+
+  </footer>
+
+</body>
+</html>
