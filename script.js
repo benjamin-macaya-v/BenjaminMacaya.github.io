@@ -3,6 +3,24 @@ const collage = document.querySelector(".collage");
 const world = document.querySelector("#world");
 const photos = [...document.querySelectorAll(".photo-slot")];
 
+// Zoom de la nube
+let zoom = 1;
+
+const minZoom = 0.45;
+const maxZoom = 1.8;
+const zoomSpeed = 0.001;
+
+collage.addEventListener("wheel", (event) => {
+  event.preventDefault();
+
+  zoom += event.deltaY * -zoomSpeed;
+
+  // Limitar el zoom
+  zoom = Math.min(maxZoom, Math.max(minZoom, zoom));
+
+  world.style.scale = zoom;
+}, { passive: false });
+
 // Comprobar que existen los elementos necesarios
 if (!collage || !world) {
   console.error("No se encontró .collage o #world en el HTML.");
@@ -38,9 +56,9 @@ const positions = photos.map((photo, i) => {
   const x = Math.cos(angle) * radius;
   const z = Math.sin(angle) * radius;
 
-  const scaleX = 560;
-  const scaleY = 350;
-  const scaleZ = 430;
+  const scaleX = 680;
+  const scaleY = 430;
+  const scaleZ = 540;
 
   return [
     x * scaleX * irregular,
