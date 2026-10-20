@@ -24,16 +24,30 @@ let velocityY = 0;
 
 const autoSpeed = 0.00022;
 
-const positions = [
-  [-310, -180, 100],
-  [-80, -300, -150],
-  [220, -220, 130],
-  [330, 30, -120],
-  [140, 270, 180],
-  [-200, 260, -170],
-  [-350, 30, -100],
-  [0, 20, 330]
-];
+const positions = photos.map((photo, i) => {
+  const total = photos.length;
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+
+  const y = 1 - (2 * (i + 0.5)) / total;
+  const radius = Math.sqrt(1 - y * y);
+  const angle = goldenAngle * i;
+
+  // Distribución orgánica, más ancha y menos esférica
+  const irregular = 1 + 0.22 * Math.sin(i * 2.4) + 0.12 * Math.cos(i * 1.7);
+
+  const x = Math.cos(angle) * radius;
+  const z = Math.sin(angle) * radius;
+
+  const scaleX = 560;
+  const scaleY = 350;
+  const scaleZ = 430;
+
+  return [
+    x * scaleX * irregular,
+    y * scaleY * irregular,
+    z * scaleZ * irregular
+  ];
+});
 
 // ==================================
 // FUNCIONES DE ROTACIÓN 3D
