@@ -16,7 +16,8 @@ if (!collage || !world || photos.length === 0) {
   let minZoom = 0.45;
   let maxZoom = 1.8;
 
-  const autoSpeed = mobileMode ? 0.00005 : 0.00010;
+  // Rotación automática muy lenta
+  const autoSpeed = mobileMode ? 0.000008 : 0.000012;
 
   // =====================================
   // ZOOM INICIAL PARA CELULAR
@@ -160,8 +161,7 @@ if (!collage || !world || photos.length === 0) {
   function updateWorld() {
     world.style.transform = quaternionToCSS(rotation);
 
-    // Rotación inversa para mantener las imágenes
-    // mirando hacia la cámara.
+    // Mantener las imágenes mirando hacia la cámara
     const inverseRotation = {
       x: -rotation.x,
       y: -rotation.y,
@@ -232,7 +232,7 @@ if (!collage || !world || photos.length === 0) {
   }
 
   function rotateWorld(dx, dy) {
-    const sensitivity = mobileMode ? 0.003 : 0.003;
+    const sensitivity = 0.003;
 
     const rotateY = axisRotation(
       { x: 0, y: 1, z: 0 },
@@ -261,8 +261,7 @@ if (!collage || !world || photos.length === 0) {
 
     suppressClick = false;
 
-    // En escritorio, el arrastre comienza
-    // solamente desde el fondo.
+    // En escritorio, solo arrastrar desde el fondo
     if (
       !mobileMode &&
       event.target.closest(".photo-slot a, .photo-slot img, .photo-slot video")
@@ -362,8 +361,9 @@ if (!collage || !world || photos.length === 0) {
 
         rotateWorld(dx, dy);
 
-        velocityX = dx * 0.10;
-        velocityY = dy * 0.10;
+        // Inercia reducida al soltar
+        velocityX = dx * 0.025;
+        velocityY = dy * 0.025;
 
         previousX = event.clientX;
         previousY = event.clientY;
@@ -380,8 +380,9 @@ if (!collage || !world || photos.length === 0) {
 
     rotateWorld(dx, dy);
 
-    velocityX = dx * 0.12;
-    velocityY = dy * 0.12;
+    // Inercia reducida al soltar
+    velocityX = dx * 0.035;
+    velocityY = dy * 0.035;
 
     previousX = event.clientX;
     previousY = event.clientY;
@@ -484,12 +485,13 @@ if (!collage || !world || photos.length === 0) {
         )
       );
 
-      const friction = mobileMode ? 0.93 : 0.96;
+      // La inercia se desvanece progresivamente
+      const friction = mobileMode ? 0.90 : 0.94;
 
       velocityX *= friction;
       velocityY *= friction;
 
-      // Rotación automática hacia la derecha
+      // Rotación automática lenta
       rotation = normalizeQuaternion(
         multiplyQuaternion(
           axisRotation(
