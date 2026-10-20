@@ -115,7 +115,7 @@ body {
 }
 
 /* =========================
-   ENLACES DE VIDEOS
+   ENLACES DEL COLLAGE
 ========================= */
 
 .photo-slot a {
@@ -128,9 +128,8 @@ body {
   text-decoration: none;
 }
 
-
 /* =========================
-   VIDEOS
+   VIDEOS DEL COLLAGE
 ========================= */
 
 .photo-slot a video {
@@ -145,12 +144,39 @@ body {
 }
 
 /* =========================
-   GALERÍA DE VIDEOS
+   IMÁGENES DEL COLLAGE
 ========================= */
+
+.photo-slot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  image-rendering: auto;
+  -webkit-user-drag: none;
+  backface-visibility: hidden;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* =========================
+   GALERÍA DE PROYECTOS
+========================= */
+
+.project-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-items: start;
+  width: 100%;
+  min-width: 0;
+}
 
 .project-gallery .gallery-item {
   width: 100%;
   min-width: 0;
+  overflow: hidden;
 }
 
 .project-gallery .gallery-item a {
@@ -165,24 +191,9 @@ body {
   height: auto;
   max-width: 100%;
   object-fit: contain;
-  cursor: pointer;
-}
-
-/* =========================
-   IMÁGENES
-========================= */
-
-.photo-slot img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
   object-position: center;
-  image-rendering: auto;
+  user-select: none;
   -webkit-user-drag: none;
-  backface-visibility: hidden;
-  pointer-events: auto;
-  cursor: pointer;
 }
 
 /* =========================
