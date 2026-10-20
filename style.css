@@ -38,6 +38,12 @@ body {
   font-family: Candara, "Segoe UI", sans-serif;
 }
 
+.project-title-link {
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 /* =========================
    ENCABEZADO SUPERIOR
 ========================= */
