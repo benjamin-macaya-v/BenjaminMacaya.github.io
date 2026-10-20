@@ -40,7 +40,7 @@ let lastTime = 0;
 let velocityX = 0;
 let velocityY = 0;
 
-const autoSpeed = 0.00022;
+const autoSpeed = 0.00010;
 
 const positions = photos.map((photo, i) => {
   const total = photos.length;
