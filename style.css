@@ -170,26 +170,28 @@ body {
   gap: 12px;
   align-items: start;
   width: 100%;
-  min-width: 0;
 }
 
-.project-gallery .gallery-item {
+.gallery-item {
   width: 100%;
-  min-width: 0;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
+  background: #050505;
 }
 
-.project-gallery .gallery-item a {
-  display: block;
+.gallery-item a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
+  height: 100%;
 }
 
-.project-gallery .gallery-item img,
-.project-gallery .gallery-item video {
+.gallery-item img,
+.gallery-item video {
   display: block;
   width: 100%;
-  height: auto;
-  max-width: 100%;
+  height: 100%;
   object-fit: contain;
   object-position: center;
   user-select: none;
