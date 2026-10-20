@@ -39,12 +39,18 @@ body {
 }
 
 .project-title-link,
+.project-title-link:link,
 .project-title-link:visited,
 .project-title-link:hover,
 .project-title-link:active {
-  color: inherit;
-  text-decoration: none;
+  color: #fff !important;
+  text-decoration: none !important;
   cursor: pointer;
+}
+
+.project-title-link h1 {
+  color: inherit !important;
+  text-decoration: none !important;
 }
 
 /* =========================
