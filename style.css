@@ -28,7 +28,12 @@ body {
   font-family: Candara, "Segoe UI", sans-serif;
 }
 
-.detail-label,
+.project-description,
+.detail-value {
+  font-family: Candara, "Segoe UI", sans-serif;
+}
+
+.project-descriptionProductora,
 .detail-value {
   font-family: Candara, "Segoe UI", sans-serif;
 }
