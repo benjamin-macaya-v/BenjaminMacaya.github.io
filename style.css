@@ -102,15 +102,18 @@ body {
   display: block;
   width: 100%;
   height: 100%;
+  position: relative;
   pointer-events: auto;
   cursor: pointer;
+  text-decoration: none;
 }
+
 
 /* =========================
    VIDEOS
 ========================= */
 
-.photo-slot video {
+.photo-slot a video {
   display: block;
   width: 100%;
   height: 100%;
