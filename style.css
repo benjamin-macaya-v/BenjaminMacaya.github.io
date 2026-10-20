@@ -339,7 +339,7 @@ body {
     height: 100vh;
     height: 100dvh;
     overflow: hidden;
-    perspective: 1100px;
+    perspective: 1400px;
     perspective-origin: 50% 50%;
     touch-action: none;
     overscroll-behavior: none;
@@ -353,8 +353,8 @@ body {
   }
 
   .photo-slot {
-    width: 180px;
-    height: 225px;
+    width: 190px;
+    height: 238px;
     pointer-events: none;
   }
 
