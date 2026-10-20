@@ -19,22 +19,10 @@ body {
 }
 
 .detail-label,
-.detail-value {
-  font-family: Candara, "Segoe UI", sans-serif;
-}
-
+.detail-value,
 .project-title,
-.detail-value {
-  font-family: Candara, "Segoe UI", sans-serif;
-}
-
 .project-description,
-.detail-value {
-  font-family: Candara, "Segoe UI", sans-serif;
-}
-
-.project-descriptionProductora,
-.detail-value {
+.project-descriptionProductora {
   font-family: Candara, "Segoe UI", sans-serif;
 }
 
@@ -114,7 +102,7 @@ body {
   top: 50%;
   transform-style: preserve-3d;
   transform-origin: 0 0;
-  will-change: transform;
+  will-change: transform, scale;
   pointer-events: none;
 }
 
@@ -333,14 +321,50 @@ body {
 }
 
 /* =========================
-   RESPONSIVE
+   RESPONSIVE: CELULARES
 ========================= */
 
 @media (max-width: 700px) {
 
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  .collage {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    perspective: 1100px;
+    perspective-origin: 50% 50%;
+    touch-action: none;
+    overscroll-behavior: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .world {
+    transform-style: preserve-3d;
+    pointer-events: none;
+  }
+
   .photo-slot {
     width: 180px;
     height: 225px;
+    pointer-events: none;
+  }
+
+  .photo-slot a {
+    width: 100%;
+    height: 100%;
+    pointer-events: auto;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .photo-slot img,
@@ -348,6 +372,12 @@ body {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    object-position: center;
+    pointer-events: none;
+    touch-action: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .site-header {
@@ -389,5 +419,4 @@ body {
   .email-link {
     font-size: 15px;
   }
-
 }
