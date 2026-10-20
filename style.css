@@ -75,7 +75,9 @@ body {
   font-family: Candara, "Segoe UI", sans-serif;
   font-size: 19px;
   font-weight: 600;
-  text-decoration: none;
+  text-decoration: none !important;
+  cursor: pointer;
+  pointer-events: auto;
   letter-spacing: 0.2px;
 }
 
