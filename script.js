@@ -56,7 +56,7 @@ const positions = photos.map((photo, i) => {
   const x = Math.cos(angle) * radius;
   const z = Math.sin(angle) * radius;
 
-  const scaleX = 680;
+  const scaleX = 800;
   const scaleY = 430;
   const scaleZ = 540;
 
