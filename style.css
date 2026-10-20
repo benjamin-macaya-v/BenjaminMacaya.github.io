@@ -18,6 +18,21 @@ body {
   overflow: hidden;
 }
 
+.detail-label,
+.detail-value {
+  font-family: Candara, "Segoe UI", sans-serif;
+}
+
+.project-title,
+.detail-value {
+  font-family: Candara, "Segoe UI", sans-serif;
+}
+
+.detail-label,
+.detail-value {
+  font-family: Candara, "Segoe UI", sans-serif;
+}
+
 /* =========================
    ENCABEZADO SUPERIOR
 ========================= */
