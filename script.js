@@ -16,17 +16,20 @@ if (!collage || !world || photos.length === 0) {
   let minZoom = 0.45;
   let maxZoom = 1.8;
 
-  // Rotación automática sutil, pero perceptible
+  // Rotación automática
   const autoSpeed = 0.00040;
 
-  // Sensibilidad directa del arrastre
+  // Sensibilidad del arrastre
   const sensitivity = 0.0032;
 
-  // Configuración de la inercia
+  // Inercia
   const inertiaStrength = 0.00065;
   const inertiaBlend = 0.40;
   const maxVelocity = 0.006;
   const friction = 0.93;
+
+  // Distancia mínima para distinguir un clic de un arrastre
+  const dragThreshold = 5;
 
   // =====================================
   // ZOOM INICIAL PARA CELULAR
@@ -229,6 +232,12 @@ if (!collage || !world || photos.length === 0) {
 
   let lastPointerTime = 0;
 
+  // Detección de clic o arrastre en escritorio
+  let pointerDownX = 0;
+  let pointerDownY = 0;
+  let movedDuringDrag = false;
+
+  // Detección de arrastre en celular
   let suppressClick = false;
 
   const activePointers = new Map();
@@ -236,7 +245,10 @@ if (!collage || !world || photos.length === 0) {
   let pinchStartDistance = 0;
   let pinchStartZoom = 1;
 
-  // Limitar la velocidad de la inercia
+  // =====================================
+  // CONTROL DE INERCIA
+  // =====================================
+
   function limitVelocity(value) {
     return Math.max(
       -maxVelocity,
@@ -244,7 +256,6 @@ if (!collage || !world || photos.length === 0) {
     );
   }
 
-  // Calcular la inercia considerando el tiempo
   function updateInertia(dx, dy, eventTime) {
     const elapsed = lastPointerTime
       ? Math.max(8, Math.min(50, eventTime - lastPointerTime))
@@ -260,7 +271,6 @@ if (!collage || !world || photos.length === 0) {
       dy * inertiaStrength * frameFactor
     );
 
-    // Suavizar la velocidad residual
     velocityX =
       velocityX * (1 - inertiaBlend) +
       targetX * inertiaBlend;
@@ -313,14 +323,7 @@ if (!collage || !world || photos.length === 0) {
   collage.addEventListener("pointerdown", (event) => {
     suppressClick = false;
 
-    // En escritorio, las imágenes siguen siendo clicables
-    if (
-      !mobileMode &&
-      event.target.closest(".photo-slot a, .photo-slot img, .photo-slot video")
-    ) {
-      return;
-    }
-
+    // CELULAR
     if (mobileMode) {
       activePointers.set(event.pointerId, {
         x: event.clientX,
@@ -347,8 +350,6 @@ if (!collage || !world || photos.length === 0) {
         velocityX = 0;
         velocityY = 0;
 
-        lastPointerTime = 0;
-
         const points = [...activePointers.values()];
 
         pinchStartDistance = getDistance(
@@ -362,10 +363,18 @@ if (!collage || !world || photos.length === 0) {
       return;
     }
 
+    // ESCRITORIO
+    // Permite arrastrar incluso encima de imágenes y videos
+
     dragging = true;
 
     previousX = event.clientX;
     previousY = event.clientY;
+
+    pointerDownX = event.clientX;
+    pointerDownY = event.clientY;
+
+    movedDuringDrag = false;
 
     velocityX = 0;
     velocityY = 0;
@@ -419,14 +428,11 @@ if (!collage || !world || photos.length === 0) {
         const dx = event.clientX - previousX;
         const dy = event.clientY - previousY;
 
-        if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+        if (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold) {
           suppressClick = true;
         }
 
-        // El arrastre es directo, sin retraso artificial
         rotateWorld(dx, dy);
-
-        // La inercia se calcula por separado
         updateInertia(dx, dy, event.timeStamp);
 
         previousX = event.clientX;
@@ -442,7 +448,21 @@ if (!collage || !world || photos.length === 0) {
     const dx = event.clientX - previousX;
     const dy = event.clientY - previousY;
 
+    // Detectar desplazamiento total desde el inicio
+    const totalX = event.clientX - pointerDownX;
+    const totalY = event.clientY - pointerDownY;
+
+    if (
+      Math.abs(totalX) > dragThreshold ||
+      Math.abs(totalY) > dragThreshold
+    ) {
+      movedDuringDrag = true;
+    }
+
+    // Rotación directa
     rotateWorld(dx, dy);
+
+    // Actualizar inercia
     updateInertia(dx, dy, event.timeStamp);
 
     previousX = event.clientX;
@@ -483,16 +503,28 @@ if (!collage || !world || photos.length === 0) {
   collage.addEventListener("pointercancel", stopDrag);
 
   // =====================================
-  // EVITAR CLICS ACCIDENTALES AL ARRASTRAR
+  // EVITAR CLICS ACCIDENTALES
   // =====================================
 
   collage.addEventListener("click", (event) => {
-    if (!mobileMode || !suppressClick) return;
 
-    event.preventDefault();
-    event.stopPropagation();
+    // ESCRITORIO
+    if (!mobileMode && movedDuringDrag) {
+      event.preventDefault();
+      event.stopPropagation();
 
-    suppressClick = false;
+      movedDuringDrag = false;
+      return;
+    }
+
+    // CELULAR
+    if (mobileMode && suppressClick) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      suppressClick = false;
+    }
+
   }, true);
 
   // =====================================
@@ -523,7 +555,8 @@ if (!collage || !world || photos.length === 0) {
   let lastFrameTime = 0;
 
   function animate(timestamp = 0) {
-    // Normalizar la animación para pantallas de 60, 120 o 144 Hz
+
+    // Normalizar velocidad entre distintas frecuencias de pantalla
     const delta = lastFrameTime
       ? Math.min((timestamp - lastFrameTime) / 16.67, 2)
       : 1;
@@ -557,7 +590,7 @@ if (!collage || !world || photos.length === 0) {
           )
         );
 
-        // Desaceleración consistente entre pantallas
+        // Desaceleración
         const damping = Math.pow(friction, delta);
 
         velocityX *= damping;
