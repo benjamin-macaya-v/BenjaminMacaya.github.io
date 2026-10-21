@@ -353,8 +353,8 @@ body {
   }
 
   .photo-slot {
-    width: 250px;
-    height: 312px;
+    width: 375px;
+    height: 468px;
     pointer-events: none;
   }
 
