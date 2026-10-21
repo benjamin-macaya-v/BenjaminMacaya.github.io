@@ -85,9 +85,9 @@ if (!collage || !world || photos.length === 0) {
 
     // Escritorio: nube horizontal
     // Celular: nube vertical
-    const scaleX = mobileMode ? 520 : 800;
-    const scaleY = mobileMode ? 820 : 430;
-    const scaleZ = mobileMode ? 260 : 540;
+    const scaleX = mobileMode ? 680 : 800;
+    const scaleY = mobileMode ? 1150 : 430;
+    const scaleZ = mobileMode ? 430 : 540;
 
     return [
       x * scaleX * irregular,
