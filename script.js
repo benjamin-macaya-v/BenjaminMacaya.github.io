@@ -17,7 +17,7 @@ if (!collage || !world || photos.length === 0) {
   let maxZoom = 1.8;
 
   // Rotación automática muy lenta
-  const autoSpeed = mobileMode ? 0.000008 : 0.000012;
+  const autoSpeed = mobileMode ? 0.00005 : 0.00010;
 
   // =====================================
   // ZOOM INICIAL PARA CELULAR
@@ -362,8 +362,8 @@ if (!collage || !world || photos.length === 0) {
         rotateWorld(dx, dy);
 
         // Inercia reducida al soltar
-        velocityX = dx * 0.025;
-        velocityY = dy * 0.025;
+        velocityX = dx * 0.10;
+        velocityY = dy * 0.10;
 
         previousX = event.clientX;
         previousY = event.clientY;
@@ -381,8 +381,8 @@ if (!collage || !world || photos.length === 0) {
     rotateWorld(dx, dy);
 
     // Inercia reducida al soltar
-    velocityX = dx * 0.035;
-    velocityY = dy * 0.035;
+    velocityX = dx * 0.12;
+    velocityY = dy * 0.12;
 
     previousX = event.clientX;
     previousY = event.clientY;
@@ -486,7 +486,7 @@ if (!collage || !world || photos.length === 0) {
       );
 
       // La inercia se desvanece progresivamente
-      const friction = mobileMode ? 0.90 : 0.94;
+      const friction = mobileMode ? 0.93 : 0.96;
 
       velocityX *= friction;
       velocityY *= friction;
