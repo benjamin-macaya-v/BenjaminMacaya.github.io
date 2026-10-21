@@ -16,19 +16,16 @@ if (!collage || !world || photos.length === 0) {
   let minZoom = 0.45;
   let maxZoom = 1.8;
 
-  // Rotación automática lenta
-  const autoSpeed = 0.00035;
+  // Rotación automática sutil, pero perceptible
+  const autoSpeed = 0.00010;
 
-  // Sensibilidad del arrastre
-  const sensitivity = 0.003;
+  // Sensibilidad directa del arrastre
+  const sensitivity = 0.0032;
 
-  // Fuerza de la inercia
-  const inertiaStrength = 0.003;
-
-  // Límite máximo de inercia
-  const maxVelocity = 0.008;
-
-  // Desaceleración
+  // Configuración de la inercia
+  const inertiaStrength = 0.00045;
+  const inertiaBlend = 0.35;
+  const maxVelocity = 0.005;
   const friction = 0.90;
 
   // =====================================
@@ -230,6 +227,8 @@ if (!collage || !world || photos.length === 0) {
   let velocityX = 0;
   let velocityY = 0;
 
+  let lastPointerTime = 0;
+
   let suppressClick = false;
 
   const activePointers = new Map();
@@ -237,12 +236,43 @@ if (!collage || !world || photos.length === 0) {
   let pinchStartDistance = 0;
   let pinchStartZoom = 1;
 
-  // Limitar la inercia
+  // Limitar la velocidad de la inercia
   function limitVelocity(value) {
     return Math.max(
       -maxVelocity,
       Math.min(maxVelocity, value)
     );
+  }
+
+  // Calcular la inercia considerando el tiempo
+  function updateInertia(dx, dy, eventTime) {
+    const elapsed = lastPointerTime
+      ? Math.max(8, Math.min(50, eventTime - lastPointerTime))
+      : 16.67;
+
+    const frameFactor = 16.67 / elapsed;
+
+    const targetX = limitVelocity(
+      dx * inertiaStrength * frameFactor
+    );
+
+    const targetY = limitVelocity(
+      dy * inertiaStrength * frameFactor
+    );
+
+    // Suavizar la velocidad residual
+    velocityX =
+      velocityX * (1 - inertiaBlend) +
+      targetX * inertiaBlend;
+
+    velocityY =
+      velocityY * (1 - inertiaBlend) +
+      targetY * inertiaBlend;
+
+    velocityX = limitVelocity(velocityX);
+    velocityY = limitVelocity(velocityY);
+
+    lastPointerTime = eventTime;
   }
 
   function getDistance(a, b) {
@@ -304,6 +334,11 @@ if (!collage || !world || photos.length === 0) {
 
         previousX = event.clientX;
         previousY = event.clientY;
+
+        lastPointerTime = event.timeStamp;
+
+        velocityX = 0;
+        velocityY = 0;
       }
 
       if (activePointers.size === 2) {
@@ -311,6 +346,8 @@ if (!collage || !world || photos.length === 0) {
 
         velocityX = 0;
         velocityY = 0;
+
+        lastPointerTime = 0;
 
         const points = [...activePointers.values()];
 
@@ -332,6 +369,8 @@ if (!collage || !world || photos.length === 0) {
 
     velocityX = 0;
     velocityY = 0;
+
+    lastPointerTime = event.timeStamp;
 
     collage.setPointerCapture(event.pointerId);
     collage.classList.add("dragging");
@@ -384,10 +423,11 @@ if (!collage || !world || photos.length === 0) {
           suppressClick = true;
         }
 
+        // El arrastre es directo, sin retraso artificial
         rotateWorld(dx, dy);
 
-        velocityX = limitVelocity(dx * inertiaStrength);
-        velocityY = limitVelocity(dy * inertiaStrength);
+        // La inercia se calcula por separado
+        updateInertia(dx, dy, event.timeStamp);
 
         previousX = event.clientX;
         previousY = event.clientY;
@@ -403,9 +443,7 @@ if (!collage || !world || photos.length === 0) {
     const dy = event.clientY - previousY;
 
     rotateWorld(dx, dy);
-
-    velocityX = limitVelocity(dx * inertiaStrength);
-    velocityY = limitVelocity(dy * inertiaStrength);
+    updateInertia(dx, dy, event.timeStamp);
 
     previousX = event.clientX;
     previousY = event.clientY;
@@ -424,6 +462,8 @@ if (!collage || !world || photos.length === 0) {
 
         previousX = remaining.x;
         previousY = remaining.y;
+
+        lastPointerTime = performance.now();
 
         dragging = true;
       }
@@ -480,40 +520,60 @@ if (!collage || !world || photos.length === 0) {
   // ANIMACIÓN
   // =====================================
 
-  function animate() {
+  let lastFrameTime = 0;
+
+  function animate(timestamp = 0) {
+    // Normalizar la animación para pantallas de 60, 120 o 144 Hz
+    const delta = lastFrameTime
+      ? Math.min((timestamp - lastFrameTime) / 16.67, 2)
+      : 1;
+
+    lastFrameTime = timestamp;
+
     if (!dragging) {
 
-      // Inercia después de soltar
+      // INERCIA DESPUÉS DE SOLTAR
+      if (
+        Math.abs(velocityX) > 0.000001 ||
+        Math.abs(velocityY) > 0.000001
+      ) {
+        rotation = normalizeQuaternion(
+          multiplyQuaternion(
+            axisRotation(
+              { x: 0, y: 1, z: 0 },
+              velocityX * delta
+            ),
+            rotation
+          )
+        );
+
+        rotation = normalizeQuaternion(
+          multiplyQuaternion(
+            axisRotation(
+              { x: 1, y: 0, z: 0 },
+              velocityY * delta
+            ),
+            rotation
+          )
+        );
+
+        // Desaceleración consistente entre pantallas
+        const damping = Math.pow(friction, delta);
+
+        velocityX *= damping;
+        velocityY *= damping;
+
+      } else {
+        velocityX = 0;
+        velocityY = 0;
+      }
+
+      // ROTACIÓN AUTOMÁTICA
       rotation = normalizeQuaternion(
         multiplyQuaternion(
           axisRotation(
             { x: 0, y: 1, z: 0 },
-            velocityX
-          ),
-          rotation
-        )
-      );
-
-      rotation = normalizeQuaternion(
-        multiplyQuaternion(
-          axisRotation(
-            { x: 1, y: 0, z: 0 },
-            velocityY
-          ),
-          rotation
-        )
-      );
-
-      // Desaceleración suave
-      velocityX *= friction;
-      velocityY *= friction;
-
-      // Rotación automática muy lenta
-      rotation = normalizeQuaternion(
-        multiplyQuaternion(
-          axisRotation(
-            { x: 0, y: 1, z: 0 },
-            autoSpeed
+            autoSpeed * delta
           ),
           rotation
         )
