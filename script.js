@@ -2,14 +2,14 @@ const collage = document.querySelector(".collage");
 const world = document.querySelector("#world");
 const photos = [...document.querySelectorAll(".photo-slot")];
 
-// Evitar el arrastre nativo de imágenes y videos
-collage.addEventListener("dragstart", (event) => {
-  event.preventDefault();
-});
-
 if (!collage || !world || photos.length === 0) {
   console.warn("No se encontró la nube o sus imágenes.");
 } else {
+
+  // Evitar el arrastre nativo de imágenes y videos
+  collage.addEventListener("dragstart", (event) => {
+    event.preventDefault();
+  });
 
   // =====================================
   // CONFIGURACIÓN
@@ -386,7 +386,6 @@ if (!collage || !world || photos.length === 0) {
 
     lastPointerTime = event.timeStamp;
 
-    collage.setPointerCapture(event.pointerId);
     collage.classList.add("dragging");
   });
 
@@ -394,7 +393,7 @@ if (!collage || !world || photos.length === 0) {
   // MOVIMIENTO DEL DEDO O MOUSE
   // =====================================
 
-  collage.addEventListener("pointermove", (event) => {
+  window.addEventListener("pointermove", (event) => {
 
     // CELULAR
     if (mobileMode) {
@@ -504,8 +503,8 @@ if (!collage || !world || photos.length === 0) {
     collage.classList.remove("dragging");
   }
 
-  collage.addEventListener("pointerup", stopDrag);
-  collage.addEventListener("pointercancel", stopDrag);
+  window.addEventListener("pointerup", stopDrag);
+  window.addEventListener("pointercancel", stopDrag);
 
   // =====================================
   // EVITAR CLICS ACCIDENTALES
