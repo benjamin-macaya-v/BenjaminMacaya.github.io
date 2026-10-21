@@ -82,8 +82,8 @@ if (!collage || !world || photos.length === 0) {
 
     const irregular =
       1 +
-      0.30 * Math.sin(i * 2.4) +
-      0.18 * Math.cos(i * 1.7);
+      0.24 * Math.sin(i * 2.4) +
+      0.14 * Math.cos(i * 1.7);
 
     const x = Math.cos(angle) * radius;
     const z = Math.sin(angle) * radius;
