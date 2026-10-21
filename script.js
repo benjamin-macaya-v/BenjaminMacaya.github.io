@@ -17,7 +17,7 @@ if (!collage || !world || photos.length === 0) {
 
   const mobileMode = window.matchMedia("(max-width: 700px)").matches;
 
-  let zoom = 0.55;
+  let zoom = 0.40;
   let minZoom = 0.35;
   let maxZoom = 2.0;
 
@@ -71,35 +71,41 @@ if (!collage || !world || photos.length === 0) {
   // DISTRIBUCIÓN DE LAS IMÁGENES
   // =====================================
 
-  const positions = photos.map((photo, i) => {
-    const total = photos.length;
+const positions = photos.map((photo, i) => {
+  const total = photos.length;
 
-    const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
-    const y = 1 - (2 * (i + 0.5)) / total;
-    const radius = Math.sqrt(1 - y * y);
-    const angle = goldenAngle * i;
+  const y = 1 - (2 * (i + 0.5)) / total;
+  const radius = Math.sqrt(1 - y * y);
+  const angle = goldenAngle * i;
 
-    const irregular =
-      1 +
-      0.24 * Math.sin(i * 2.4) +
-      0.14 * Math.cos(i * 1.7);
+  // Distribución irregular moderada
+  const irregular =
+    1 +
+    0.18 * Math.sin(i * 2.4) +
+    0.10 * Math.cos(i * 1.7);
 
-    const x = Math.cos(angle) * radius;
-    const z = Math.sin(angle) * radius;
+  // Distribución de profundidad
+  // Evita concentrar tantas imágenes en la parte trasera
+  const depthVariation =
+    0.78 + 0.22 * Math.sin(i * 1.83);
 
-    // Escritorio: nube horizontal
-    // Celular: nube vertical
-    const scaleX = mobileMode ? 520 : 900;
-    const scaleY = mobileMode ? 820 : 473;
-    const scaleZ = mobileMode ? 300 : 650;
+  const x = Math.cos(angle) * radius;
+  const z = Math.sin(angle) * radius * depthVariation;
 
-    return [
-      x * scaleX * irregular,
-      y * scaleY * irregular,
-      z * scaleZ * irregular
-    ];
-  });
+  // Escritorio: nube horizontal
+  // Celular: nube vertical
+  const scaleX = mobileMode ? 520 : 900;
+  const scaleY = mobileMode ? 820 : 473;
+  const scaleZ = mobileMode ? 300 : 650;
+
+  return [
+    x * scaleX * irregular,
+    y * scaleY * irregular,
+    z * scaleZ * irregular
+  ];
+});
 
   // =====================================
   // ROTACIÓN 3D
