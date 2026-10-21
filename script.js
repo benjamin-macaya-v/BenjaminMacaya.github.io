@@ -63,49 +63,48 @@ if (!collage || !world || photos.length === 0) {
     zoom = fitZoom;
     minZoom = fitZoom * 0.65;
     maxZoom = fitZoom * 3.5;
-  
   }
+
   applyZoom();
 
   // =====================================
   // DISTRIBUCIÓN DE LAS IMÁGENES
   // =====================================
 
-const positions = photos.map((photo, i) => {
-  const total = photos.length;
+  const positions = photos.map((photo, i) => {
+    const total = photos.length;
 
-  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+    const goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
-  const y = 1 - (2 * (i + 0.5)) / total;
-  const radius = Math.sqrt(1 - y * y);
-  const angle = goldenAngle * i;
+    const y = 1 - (2 * (i + 0.5)) / total;
+    const radius = Math.sqrt(1 - y * y);
+    const angle = goldenAngle * i;
 
-  // Distribución irregular moderada
-  const irregular =
-    1 +
-    0.18 * Math.sin(i * 2.4) +
-    0.10 * Math.cos(i * 1.7);
+    // Distribución irregular moderada
+    const irregular =
+      1 +
+      0.18 * Math.sin(i * 2.4) +
+      0.10 * Math.cos(i * 1.7);
 
-  // Distribución de profundidad
-  // Evita concentrar tantas imágenes en la parte trasera
-  const depthVariation =
-    0.78 + 0.22 * Math.sin(i * 1.83);
+    // Distribución de profundidad
+    const depthVariation =
+      0.78 + 0.22 * Math.sin(i * 1.83);
 
-  const x = Math.cos(angle) * radius;
-  const z = Math.sin(angle) * radius * depthVariation;
+    const x = Math.cos(angle) * radius;
+    const z = Math.sin(angle) * radius * depthVariation;
 
-  // Escritorio: nube horizontal
-  // Celular: nube vertical
-  const scaleX = mobileMode ? 520 : 900;
-  const scaleY = mobileMode ? 820 : 473;
-  const scaleZ = mobileMode ? 500 : 780;
+    // Escritorio: nube horizontal
+    // Celular: nube vertical
+    const scaleX = mobileMode ? 520 : 900;
+    const scaleY = mobileMode ? 820 : 473;
+    const scaleZ = mobileMode ? 500 : 780;
 
-  return [
-    x * scaleX * irregular,
-    y * scaleY * irregular,
-    z * scaleZ * irregular
-  ];
-});
+    return [
+      x * scaleX * irregular,
+      y * scaleY * irregular,
+      z * scaleZ * irregular
+    ];
+  });
 
   // =====================================
   // ROTACIÓN 3D
@@ -178,13 +177,18 @@ const positions = photos.map((photo, i) => {
   }
 
   // =====================================
-  // ACTUALIZAR LA NUBE
+  // ACTUALIZAR LA NUBE OPTIMIZADO
   // =====================================
 
+  let photoPositionsInitialized = false;
+
   function updateWorld() {
+
+    // Actualizar rotación general
     world.style.transform = quaternionToCSS(rotation);
 
-    // Las imágenes siempre miran hacia la cámara
+    // Calcular rotación inversa para mantener
+    // las fotografías mirando hacia la cámara
     const inverseRotation = {
       x: -rotation.x,
       y: -rotation.y,
@@ -194,15 +198,24 @@ const positions = photos.map((photo, i) => {
 
     const billboard = quaternionToCSS(inverseRotation);
 
-    photos.forEach((photo, i) => {
-      const [x, y, z] = positions[i];
+    // Compartir la rotación inversa mediante CSS
+    world.style.setProperty("--billboard", billboard);
 
-      photo.style.transform = `
-        translate(-50%, -50%)
-        translate3d(${x}px, ${y}px, ${z}px)
-        ${billboard}
-      `;
-    });
+    // Establecer posiciones individuales una sola vez
+    if (!photoPositionsInitialized) {
+
+      photos.forEach((photo, i) => {
+        const [x, y, z] = positions[i];
+
+        photo.style.transform = `
+          translate(-50%, -50%)
+          translate3d(${x}px, ${y}px, ${z}px)
+          var(--billboard)
+        `;
+      });
+
+      photoPositionsInitialized = true;
+    }
   }
 
   // =====================================
@@ -375,8 +388,6 @@ const positions = photos.map((photo, i) => {
     }
 
     // ESCRITORIO
-    // Permite arrastrar incluso encima de imágenes y videos
-
     dragging = true;
 
     previousX = event.clientX;
@@ -438,7 +449,10 @@ const positions = photos.map((photo, i) => {
         const dx = event.clientX - previousX;
         const dy = event.clientY - previousY;
 
-        if (Math.abs(dx) > dragThreshold || Math.abs(dy) > dragThreshold) {
+        if (
+          Math.abs(dx) > dragThreshold ||
+          Math.abs(dy) > dragThreshold
+        ) {
           suppressClick = true;
         }
 
@@ -458,7 +472,6 @@ const positions = photos.map((photo, i) => {
     const dx = event.clientX - previousX;
     const dy = event.clientY - previousY;
 
-    // Detectar desplazamiento total desde el inicio
     const totalX = event.clientX - pointerDownX;
     const totalY = event.clientY - pointerDownY;
 
@@ -469,10 +482,8 @@ const positions = photos.map((photo, i) => {
       movedDuringDrag = true;
     }
 
-    // Rotación directa
     rotateWorld(dx, dy);
 
-    // Actualizar inercia
     updateInertia(dx, dy, event.timeStamp);
 
     previousX = event.clientX;
@@ -566,7 +577,7 @@ const positions = photos.map((photo, i) => {
 
   function animate(timestamp = 0) {
 
-    // Normalizar velocidad entre distintas frecuencias de pantalla
+    // Normalizar velocidad entre distintas frecuencias
     const delta = lastFrameTime
       ? Math.min((timestamp - lastFrameTime) / 16.67, 2)
       : 1;
