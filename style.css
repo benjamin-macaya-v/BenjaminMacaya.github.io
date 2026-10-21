@@ -100,9 +100,12 @@ body {
   height: 0;
   left: 50%;
   top: 50%;
+
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
   transform-origin: 0 0;
-  will-change: transform, scale;
+
+  will-change: transform;
   pointer-events: none;
 }
 
@@ -116,7 +119,13 @@ body {
   height: 350px;
   left: 100%;
   top: 100%;
+
   transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
   pointer-events: none;
 }
 
@@ -144,7 +153,10 @@ body {
   height: 100%;
   object-fit: contain;
   object-position: center;
+
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
   pointer-events: none;
   cursor: pointer;
 }
@@ -159,9 +171,13 @@ body {
   height: 100%;
   object-fit: contain;
   object-position: center;
+
   image-rendering: auto;
-  -webkit-user-drag: none;
+
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  -webkit-user-drag: none;
   pointer-events: auto;
   cursor: pointer;
 }
@@ -320,21 +336,6 @@ body {
   -webkit-user-drag: none;
 }
 
-/* Evitar selección y arrastre nativo de imágenes */
-.photo-slot,
-.photo-slot img,
-.photo-slot video,
-.photo-slot a {
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-user-drag: none;
-}
-
-/* Evitar que las imágenes se comporten como elementos arrastrables */
-.photo-slot img {
-  pointer-events: auto;
-}
-
 /* =========================
    RESPONSIVE: CELULARES
 ========================= */
@@ -354,16 +355,20 @@ body {
     height: 100vh;
     height: 100dvh;
     overflow: hidden;
+
     perspective: 1400px;
     perspective-origin: 50% 50%;
+
     touch-action: none;
     overscroll-behavior: none;
+
     -webkit-user-select: none;
     user-select: none;
   }
 
   .world {
     transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
     pointer-events: none;
   }
 
@@ -378,6 +383,7 @@ body {
     height: 100%;
     pointer-events: auto;
     touch-action: none;
+
     -webkit-user-select: none;
     user-select: none;
   }
@@ -388,8 +394,13 @@ body {
     height: 100%;
     object-fit: contain;
     object-position: center;
+
     pointer-events: none;
     touch-action: none;
+
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+
     -webkit-user-drag: none;
     -webkit-user-select: none;
     user-select: none;
