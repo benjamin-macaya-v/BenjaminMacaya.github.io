@@ -2,6 +2,11 @@ const collage = document.querySelector(".collage");
 const world = document.querySelector("#world");
 const photos = [...document.querySelectorAll(".photo-slot")];
 
+// Evitar el arrastre nativo de imágenes y videos
+collage.addEventListener("dragstart", (event) => {
+  event.preventDefault();
+});
+
 if (!collage || !world || photos.length === 0) {
   console.warn("No se encontró la nube o sus imágenes.");
 } else {
