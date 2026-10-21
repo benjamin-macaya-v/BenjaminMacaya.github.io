@@ -320,6 +320,21 @@ body {
   -webkit-user-drag: none;
 }
 
+/* Evitar selección y arrastre nativo de imágenes */
+.photo-slot,
+.photo-slot img,
+.photo-slot video,
+.photo-slot a {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Evitar que las imágenes se comporten como elementos arrastrables */
+.photo-slot img {
+  pointer-events: auto;
+}
+
 /* =========================
    RESPONSIVE: CELULARES
 ========================= */
