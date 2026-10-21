@@ -17,7 +17,7 @@ if (!collage || !world || photos.length === 0) {
 
   const mobileMode = window.matchMedia("(max-width: 700px)").matches;
 
-  let zoom = 1;
+  let zoom = 0.85;
   let minZoom = 0.45;
   let maxZoom = 1.8;
 
@@ -90,9 +90,9 @@ if (!collage || !world || photos.length === 0) {
 
     // Escritorio: nube horizontal
     // Celular: nube vertical
-    const scaleX = mobileMode ? 520 : 800;
-    const scaleY = mobileMode ? 820 : 430;
-    const scaleZ = mobileMode ? 260 : 540;
+    const scaleX = mobileMode ? 520 : 1000;
+    const scaleY = mobileMode ? 820 : 5430;
+    const scaleZ = mobileMode ? 260 : 680;
 
     return [
       x * scaleX * irregular,
