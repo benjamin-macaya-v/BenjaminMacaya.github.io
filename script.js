@@ -7,7 +7,7 @@ if (!collage || !world || photos.length === 0) {
 } else {
 
   // =====================================
-  // CONFIGURACIÓN GENERAL
+  // CONFIGURACIÓN
   // =====================================
 
   const mobileMode = window.matchMedia("(max-width: 700px)").matches;
@@ -16,8 +16,20 @@ if (!collage || !world || photos.length === 0) {
   let minZoom = 0.45;
   let maxZoom = 1.8;
 
-  // Rotación automática muy lenta
-  const autoSpeed = mobileMode ? 0.000003 : 0.000004;
+  // Rotación automática lenta
+  const autoSpeed = 0.000015;
+
+  // Sensibilidad del arrastre
+  const sensitivity = 0.003;
+
+  // Fuerza de la inercia
+  const inertiaStrength = 0.003;
+
+  // Límite máximo de inercia
+  const maxVelocity = 0.008;
+
+  // Desaceleración
+  const friction = 0.90;
 
   // =====================================
   // ZOOM INICIAL PARA CELULAR
@@ -33,7 +45,7 @@ if (!collage || !world || photos.length === 0) {
     const fitWidth = (width * 0.98) / cloudWidth;
     const fitHeight = (height * 0.90) / cloudHeight;
 
-    return Math.min(fitWidth, fitHeight) * 1.12;
+    return Math.min(fitWidth, fitHeight) * 1.22;
   }
 
   function applyZoom() {
@@ -85,7 +97,7 @@ if (!collage || !world || photos.length === 0) {
   });
 
   // =====================================
-  // ROTACIÓN 3D CON CUATERNIONES
+  // ROTACIÓN 3D
   // =====================================
 
   let rotation = {
@@ -140,7 +152,7 @@ if (!collage || !world || photos.length === 0) {
     );
 
     const sinHalf = Math.sqrt(
-      1 - normalized.w * normalized.w
+      Math.max(0, 1 - normalized.w * normalized.w)
     );
 
     if (sinHalf < 0.0001) {
@@ -161,7 +173,7 @@ if (!collage || !world || photos.length === 0) {
   function updateWorld() {
     world.style.transform = quaternionToCSS(rotation);
 
-    // Mantener las imágenes mirando hacia la cámara
+    // Las imágenes siempre miran hacia la cámara
     const inverseRotation = {
       x: -rotation.x,
       y: -rotation.y,
@@ -207,10 +219,11 @@ if (!collage || !world || photos.length === 0) {
   });
 
   // =====================================
-  // ROTACIÓN MANUAL
+  // VARIABLES DE MOVIMIENTO
   // =====================================
 
   let dragging = false;
+
   let previousX = 0;
   let previousY = 0;
 
@@ -224,6 +237,14 @@ if (!collage || !world || photos.length === 0) {
   let pinchStartDistance = 0;
   let pinchStartZoom = 1;
 
+  // Limitar la inercia
+  function limitVelocity(value) {
+    return Math.max(
+      -maxVelocity,
+      Math.min(maxVelocity, value)
+    );
+  }
+
   function getDistance(a, b) {
     const dx = a.x - b.x;
     const dy = a.y - b.y;
@@ -231,9 +252,11 @@ if (!collage || !world || photos.length === 0) {
     return Math.sqrt(dx * dx + dy * dy);
   }
 
-  function rotateWorld(dx, dy) {
-    const sensitivity = 0.003;
+  // =====================================
+  // GIRAR LA NUBE
+  // =====================================
 
+  function rotateWorld(dx, dy) {
     const rotateY = axisRotation(
       { x: 0, y: 1, z: 0 },
       dx * sensitivity
@@ -258,10 +281,9 @@ if (!collage || !world || photos.length === 0) {
   // =====================================
 
   collage.addEventListener("pointerdown", (event) => {
-
     suppressClick = false;
 
-    // En escritorio, solo arrastrar desde el fondo
+    // En escritorio, las imágenes siguen siendo clicables
     if (
       !mobileMode &&
       event.target.closest(".photo-slot a, .photo-slot img, .photo-slot video")
@@ -287,6 +309,9 @@ if (!collage || !world || photos.length === 0) {
       if (activePointers.size === 2) {
         dragging = false;
 
+        velocityX = 0;
+        velocityY = 0;
+
         const points = [...activePointers.values()];
 
         pinchStartDistance = getDistance(
@@ -308,6 +333,7 @@ if (!collage || !world || photos.length === 0) {
     velocityX = 0;
     velocityY = 0;
 
+    collage.setPointerCapture(event.pointerId);
     collage.classList.add("dragging");
   });
 
@@ -317,8 +343,8 @@ if (!collage || !world || photos.length === 0) {
 
   collage.addEventListener("pointermove", (event) => {
 
+    // CELULAR
     if (mobileMode) {
-
       if (!activePointers.has(event.pointerId)) return;
 
       activePointers.set(event.pointerId, {
@@ -351,7 +377,6 @@ if (!collage || !world || photos.length === 0) {
 
       // UN DEDO: ROTACIÓN
       if (activePointers.size === 1 && dragging) {
-
         const dx = event.clientX - previousX;
         const dy = event.clientY - previousY;
 
@@ -361,13 +386,9 @@ if (!collage || !world || photos.length === 0) {
 
         rotateWorld(dx, dy);
 
-        // Inercia reducida al soltar
-        velocityX = dx * 0.008;
-        velocityY = dy * 0.008;
-        
-        velocityX = limitVelocity(velocityX);
-        velocityY = limitVelocity(velocityY);
-        
+        velocityX = limitVelocity(dx * inertiaStrength);
+        velocityY = limitVelocity(dy * inertiaStrength);
+
         previousX = event.clientX;
         previousY = event.clientY;
       }
@@ -383,13 +404,9 @@ if (!collage || !world || photos.length === 0) {
 
     rotateWorld(dx, dy);
 
-    // Inercia reducida al soltar
-    velocityX = dx * 0.008;
-    velocityY = dy * 0.008;
-    
-    velocityX = limitVelocity(velocityX);
-    velocityY = limitVelocity(velocityY);
-    
+    velocityX = limitVelocity(dx * inertiaStrength);
+    velocityY = limitVelocity(dy * inertiaStrength);
+
     previousX = event.clientX;
     previousY = event.clientY;
   });
@@ -399,9 +416,7 @@ if (!collage || !world || photos.length === 0) {
   // =====================================
 
   function stopDrag(event) {
-
     if (mobileMode) {
-
       activePointers.delete(event.pointerId);
 
       if (activePointers.size === 1) {
@@ -428,7 +443,7 @@ if (!collage || !world || photos.length === 0) {
   collage.addEventListener("pointercancel", stopDrag);
 
   // =====================================
-  // EVITAR ABRIR ENLACES AL GIRAR
+  // EVITAR CLICS ACCIDENTALES AL ARRASTRAR
   // =====================================
 
   collage.addEventListener("click", (event) => {
@@ -458,22 +473,17 @@ if (!collage || !world || photos.length === 0) {
       );
 
       applyZoom();
-
     }, { passive: false });
   }
-  
-function limitVelocity(value, max = 0.025) {
-  return Math.max(-max, Math.min(max, value));
-}
+
   // =====================================
-  // ANIMACIÓN AUTOMÁTICA
+  // ANIMACIÓN
   // =====================================
 
   function animate() {
-
     if (!dragging) {
 
-      // Inercia
+      // Inercia después de soltar
       rotation = normalizeQuaternion(
         multiplyQuaternion(
           axisRotation(
@@ -494,13 +504,11 @@ function limitVelocity(value, max = 0.025) {
         )
       );
 
-      // La inercia se desvanece progresivamente
-      const friction = mobileMode ? 0.82 : 0.82;
-
+      // Desaceleración suave
       velocityX *= friction;
       velocityY *= friction;
 
-      // Rotación automática lenta
+      // Rotación automática muy lenta
       rotation = normalizeQuaternion(
         multiplyQuaternion(
           axisRotation(
