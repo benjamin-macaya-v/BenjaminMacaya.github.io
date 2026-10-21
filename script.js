@@ -17,16 +17,16 @@ if (!collage || !world || photos.length === 0) {
   let maxZoom = 1.8;
 
   // Rotación automática sutil, pero perceptible
-  const autoSpeed = 0.00010;
+  const autoSpeed = 0.00040;
 
   // Sensibilidad directa del arrastre
   const sensitivity = 0.0032;
 
   // Configuración de la inercia
-  const inertiaStrength = 0.00045;
-  const inertiaBlend = 0.35;
-  const maxVelocity = 0.005;
-  const friction = 0.90;
+  const inertiaStrength = 0.00065;
+  const inertiaBlend = 0.40;
+  const maxVelocity = 0.006;
+  const friction = 0.93;
 
   // =====================================
   // ZOOM INICIAL PARA CELULAR
