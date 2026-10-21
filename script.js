@@ -98,7 +98,7 @@ const positions = photos.map((photo, i) => {
   // Celular: nube vertical
   const scaleX = mobileMode ? 520 : 900;
   const scaleY = mobileMode ? 820 : 473;
-  const scaleZ = mobileMode ? 300 : 700;
+  const scaleZ = mobileMode ? 300 : 780;
 
   return [
     x * scaleX * irregular,
