@@ -17,7 +17,7 @@ if (!collage || !world || photos.length === 0) {
 
   const mobileMode = window.matchMedia("(max-width: 700px)").matches;
 
-  let zoom = 0.85;
+  let zoom = 0.70;
   let minZoom = 0.45;
   let maxZoom = 1.8;
 
@@ -82,8 +82,8 @@ if (!collage || !world || photos.length === 0) {
 
     const irregular =
       1 +
-      0.22 * Math.sin(i * 2.4) +
-      0.12 * Math.cos(i * 1.7);
+      0.30 * Math.sin(i * 2.4) +
+      0.18 * Math.cos(i * 1.7);
 
     const x = Math.cos(angle) * radius;
     const z = Math.sin(angle) * radius;
@@ -92,7 +92,7 @@ if (!collage || !world || photos.length === 0) {
     // Celular: nube vertical
     const scaleX = mobileMode ? 520 : 1000;
     const scaleY = mobileMode ? 820 : 5430;
-    const scaleZ = mobileMode ? 260 : 680;
+    const scaleZ = mobileMode ? 300 : 850;
 
     return [
       x * scaleX * irregular,
