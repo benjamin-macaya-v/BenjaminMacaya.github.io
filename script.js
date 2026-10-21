@@ -82,8 +82,8 @@ if (!collage || !world || photos.length === 0) {
 
     const irregular =
       1 +
-      0.24 * Math.sin(i * 2.4) +
-      0.14 * Math.cos(i * 1.7);
+      0.30 * Math.sin(i * 2.4) +
+      0.18 * Math.cos(i * 1.7);
 
     const x = Math.cos(angle) * radius;
     const z = Math.sin(angle) * radius;
@@ -91,7 +91,7 @@ if (!collage || !world || photos.length === 0) {
     // Escritorio: nube horizontal
     // Celular: nube vertical
     const scaleX = mobileMode ? 520 : 1000;
-    const scaleY = mobileMode ? 820 : 5430;
+    const scaleY = mobileMode ? 820 : 543;
     const scaleZ = mobileMode ? 300 : 850;
 
     return [
