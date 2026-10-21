@@ -17,7 +17,7 @@ if (!collage || !world || photos.length === 0) {
   let maxZoom = 1.8;
 
   // Rotación automática lenta
-  const autoSpeed = 0.000015;
+  const autoSpeed = 0.00035;
 
   // Sensibilidad del arrastre
   const sensitivity = 0.003;
