@@ -17,7 +17,7 @@ if (!collage || !world || photos.length === 0) {
 
   const mobileMode = window.matchMedia("(max-width: 700px)").matches;
 
-  let zoom = 0.55;
+  let zoom = 0.67;
   let minZoom = 0.35;
   let maxZoom = 2.0;
 
