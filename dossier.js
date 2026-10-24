@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const PDF_URL = "./ebook.pdf";
+  const PDF_URL = "./benjaminmacaya.pdf";
 
   const loading = document.getElementById("loading");
   const errorBox = document.getElementById("error");
@@ -18,7 +18,7 @@
 
   // Ajusta la nitidez sin crear imágenes excesivamente grandes.
   const MAX_RENDER_WIDTH = 1000;
-  const JPEG_QUALITY = 0.88;
+  const JPEG_QUALITY = 0.1;
 
   function showError(message) {
     loading.hidden = true;
