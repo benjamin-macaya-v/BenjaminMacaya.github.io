@@ -26,6 +26,10 @@ body {
   font-family: Candara, "Segoe UI", sans-serif;
 }
 
+/* =========================
+   ENLACES DE TÍTULOS
+========================= */
+
 .project-title-link,
 .project-title-link:link,
 .project-title-link:visited,
@@ -74,10 +78,10 @@ body {
 ========================= */
 
 .collage {
+  position: relative;
   width: 100vw;
   height: 100vh;
   height: 100dvh;
-  position: relative;
   overflow: hidden;
   perspective: 1400px;
   perspective-origin: 50% 50%;
@@ -100,11 +104,9 @@ body {
   height: 0;
   left: 50%;
   top: 50%;
-
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
   transform-origin: 0 0;
-
   will-change: transform;
   pointer-events: none;
 }
@@ -119,13 +121,10 @@ body {
   height: 350px;
   left: 100%;
   top: 100%;
-
   transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
-
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-
   pointer-events: none;
 }
 
@@ -135,9 +134,9 @@ body {
 
 .photo-slot a {
   display: block;
+  position: relative;
   width: 100%;
   height: 100%;
-  position: relative;
   pointer-events: auto;
   cursor: pointer;
   text-decoration: none;
@@ -153,10 +152,8 @@ body {
   height: 100%;
   object-fit: contain;
   object-position: center;
-
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-
   pointer-events: none;
   cursor: pointer;
 }
@@ -171,12 +168,9 @@ body {
   height: 100%;
   object-fit: contain;
   object-position: center;
-
   image-rendering: auto;
-
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-
   -webkit-user-drag: none;
   pointer-events: auto;
   cursor: pointer;
@@ -286,11 +280,11 @@ body {
 /* ICONOS */
 
 .footer-left a:not(.email-link) {
-  width: 32px;
-  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 32px;
+  height: 32px;
   color: white;
   text-decoration: none;
   transition: opacity 0.2s ease;
@@ -320,6 +314,29 @@ body {
   text-decoration: none;
   margin-left: 3px;
   transition: opacity 0.2s ease;
+}
+
+/* =========================
+   MENSAJE DE CORREO COPIADO
+========================= */
+
+#copy-message {
+  display: none;
+  position: fixed;
+  bottom: 65px;
+  left: 22px;
+  padding: 7px 12px;
+  background: white;
+  color: #050505;
+  font-family: Candara, "Segoe UI", sans-serif;
+  font-size: 13px;
+  border-radius: 4px;
+  z-index: 10001;
+  pointer-events: none;
+}
+
+#copy-message.show {
+  display: block;
 }
 
 /* =========================
@@ -355,13 +372,10 @@ body {
     height: 100vh;
     height: 100dvh;
     overflow: hidden;
-
     perspective: 1400px;
     perspective-origin: 50% 50%;
-
     touch-action: none;
     overscroll-behavior: none;
-
     -webkit-user-select: none;
     user-select: none;
   }
@@ -383,7 +397,6 @@ body {
     height: 100%;
     pointer-events: auto;
     touch-action: none;
-
     -webkit-user-select: none;
     user-select: none;
   }
@@ -394,13 +407,10 @@ body {
     height: 100%;
     object-fit: contain;
     object-position: center;
-
     pointer-events: none;
     touch-action: none;
-
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-
     -webkit-user-drag: none;
     -webkit-user-select: none;
     user-select: none;
@@ -445,31 +455,7 @@ body {
   .email-link {
     font-size: 15px;
   }
-}
 
-#copy-message {
-  display: none;
-  position: fixed;
-  bottom: 65px;
-  left: 22px;
-
-  padding: 7px 12px;
-  background: white;
-  color: #050505;
-
-  font-family: Candara, "Segoe UI", sans-serif;
-  font-size: 13px;
-  border-radius: 4px;
-
-  z-index: 10001;
-  pointer-events: none;
-}
-
-#copy-message.show {
-  display: block;
-}
-
-@media (max-width: 700px) {
   #copy-message {
     left: 16px;
     bottom: 60px;
