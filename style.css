@@ -314,45 +314,7 @@ body {
   text-decoration: none;
   margin-left: 3px;
   transition: opacity 0.2s ease;
-}
-
-/* =========================
-   MENSAJE DE CORREO COPIADO
-========================= */
-
-#copy-message {
-  position: fixed;
-  bottom: 65px;
-  left: 22px;
-  padding: 7px 12px;
-  background: white;
-  color: #050505;
-  font-family: Candara, "Segoe UI", sans-serif;
-  font-size: 13px;
-  border-radius: 4px;
-  z-index: 10001;
-  pointer-events: none;
-}
-
-/* Oculto inicialmente */
-html body #copy-message:not(.show) {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-}
-
-/* Visible después de copiar */
-html body #copy-message.show {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-@media (max-width: 700px) {
-  #copy-message {
-    left: 16px;
-    bottom: 60px;
-  }
+  cursor: pointer;
 }
 
 /* =========================
@@ -470,10 +432,5 @@ html body #copy-message.show {
 
   .email-link {
     font-size: 15px;
-  }
-
-  #copy-message {
-    left: 16px;
-    bottom: 60px;
   }
 }
