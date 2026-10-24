@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color" content="#f5f5f2">
+  <meta
+    name="description"
+    content="Lee el dossier de Benjamín Macaya en formato de libro interactivo."
+  >
+
+  <title>Dossier — Benjamín Macaya</title>
+
+  <!-- CSS independiente del portafolio -->
+  <link rel="stylesheet" href="dossier.css">
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <!-- Biblioteca de animación de páginas -->
+  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+
+  <!-- JavaScript independiente del portafolio -->
+  <script src="dossier.js" defer></script>
+</head>
+
+<body>
+
+  <header class="dossier-header">
+
+    <a href="index.html" class="back-link" aria-label="Volver al portafolio">
+      <span aria-hidden="true">←</span>
+      <span>Volver al portafolio</span>
+    </a>
+
+    <span class="dossier-title">
+      benjamín macaya velásquez
+    </span>
+
+    <a
+      href="ebook.pdf"
+      class="pdf-link"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Ver PDF <span aria-hidden="true">↗</span>
+    </a>
+
+  </header>
+
+  <main class="dossier-main">
+
+    <section class="dossier-intro">
+      <p class="eyebrow">DOSSIER · PORTAFOLIO</p>
+
+      <h1>Una colección de ideas.</h1>
+
+      <p class="subtitle">
+        Explora mi trabajo a través de esta edición digital interactiva.
+      </p>
+    </section>
+
+    <section
+      class="reader"
+      aria-label="Lector del dossier"
+    >
+
+      <!-- Mensaje durante la carga -->
+      <div
+        id="loading"
+        class="status"
+        role="status"
+        aria-live="polite"
+      >
+        Preparando el dossier...
+      </div>
+
+      <!-- Mensaje en caso de error -->
+      <div
+        id="error"
+        class="error"
+        role="alert"
+        hidden
+      ></div>
+
+      <!-- Contenedor del libro -->
+      <div id="book-shell" class="book-shell" hidden>
+        <div id="book"></div>
+      </div>
+
+      <!-- Controles de navegación -->
+      <nav class="reader-controls" aria-label="Navegación del libro">
+
+        <button
+          id="prev"
+          class="nav-button"
+          type="button"
+          disabled
+        >
+          <span aria-hidden="true">←</span>
+          <span>Anterior</span>
+        </button>
+
+        <div class="page-status" aria-live="polite">
+          <span id="page-label">Portada</span>
+          <span class="page-divider">·</span>
+          <span id="page-count">Cargando...</span>
+        </div>
+
+        <button
+          id="next"
+          class="nav-button"
+          type="button"
+          disabled
+        >
+          <span>Siguiente</span>
+          <span aria-hidden="true">→</span>
+        </button>
+
+      </nav>
+
+      <p class="reader-hint">
+        Haz clic en las esquinas o arrastra las páginas para avanzar.
+      </p>
+
+    </section>
+
+  </main>
+
+  <footer class="dossier-footer">
+    <span>Benjamín Macaya Velásquez</span>
+    <a href="index.html">Volver al inicio ↗</a>
+  </footer>
+
+</body>
+</html>
