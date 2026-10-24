@@ -189,9 +189,9 @@
       console.error("Error al cargar el ebook:", error);
 
       showError(
-        "No se pudo abrir el libro. Comprueba que ebook.pdf " +
-        "esté en la carpeta del proyecto y vuelve a intentarlo. " +
-        "Si el problema continúa, revisa la consola del navegador."
+        "No se pudo abrir el libro." +
+        "vuelve a intentarlo. " +
+        "Si el problema continúa, porfa mandame un correo."
       );
     }
   }
