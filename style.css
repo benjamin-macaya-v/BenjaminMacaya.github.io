@@ -448,32 +448,25 @@ body {
 }
 
 #copy-message {
+  display: none;
   position: fixed;
   bottom: 65px;
   left: 22px;
 
   padding: 7px 12px;
-  background: #fff;
+  background: white;
   color: #050505;
 
   font-family: Candara, "Segoe UI", sans-serif;
   font-size: 13px;
-
   border-radius: 4px;
 
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(5px);
-
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  pointer-events: none;
   z-index: 10001;
+  pointer-events: none;
 }
 
 #copy-message.show {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
+  display: block;
 }
 
 @media (max-width: 700px) {
