@@ -657,18 +657,18 @@ async function copiarCorreo(event) {
   const correo = "benjamin.macaya.v@gmail.com";
   const mensaje = document.getElementById("copy-message");
 
+  if (!mensaje) return;
+
   try {
     await navigator.clipboard.writeText(correo);
 
-    if (mensaje) {
-      mensaje.classList.add("show");
+    mensaje.classList.add("show");
 
-      clearTimeout(window.copyMessageTimer);
+    clearTimeout(window.copyMessageTimer);
 
-      window.copyMessageTimer = setTimeout(() => {
-        mensaje.classList.remove("show");
-      }, 2000);
-    }
+    window.copyMessageTimer = setTimeout(() => {
+      mensaje.classList.remove("show");
+    }, 2000);
 
   } catch (error) {
     console.error("No se pudo copiar el correo:", error);
