@@ -252,7 +252,32 @@
       text-decoration: none;
       margin-left: 3px;
     }
+    
+#copy-message {
+  display: none !important;
+  position: fixed;
+  bottom: 65px;
+  left: 22px;
+  padding: 7px 12px;
+  background: white;
+  color: #050505;
+  font-family: Candara, "Segoe UI", sans-serif;
+  font-size: 13px;
+  border-radius: 4px;
+  z-index: 10001;
+  pointer-events: none;
+}
 
+#copy-message.show {
+  display: block !important;
+}
+
+@media (max-width: 480px) {
+  #copy-message {
+    left: 14px;
+    bottom: 60px;
+  }
+}
     .footer-left a:hover {
       opacity: 0.65;
     }
