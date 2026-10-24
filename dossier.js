@@ -16,9 +16,16 @@
   let pageFlip = null;
   let totalPages = 0;
 
-  // Ajusta la nitidez sin crear imágenes excesivamente grandes.
-  const MAX_RENDER_WIDTH = 1000;
-  const JPEG_QUALITY = 0.1;
+  // =====================================
+  // CALIDAD DE RENDERIZADO
+  // =====================================
+
+  const MAX_RENDER_WIDTH = 2400;
+  const MAX_RENDER_HEIGHT = 3200;
+
+  const JPEG_QUALITY = 0.96;
+
+  const MAX_OUTPUT_SCALE = 2;
 
   function showError(message) {
     loading.hidden = true;
@@ -26,6 +33,10 @@
     errorBox.textContent = message;
     errorBox.hidden = false;
   }
+
+  // =====================================
+  // CONTROLES DE NAVEGACIÓN
+  // =====================================
 
   function updateControls() {
     if (!pageFlip) return;
@@ -38,10 +49,13 @@
 
     if (index === 0) {
       pageLabel.textContent = "Portada";
+
     } else if (index >= totalPages - 1) {
       pageLabel.textContent = "Contraportada";
+
     } else if (orientation === "portrait") {
       pageLabel.textContent = `Página ${index + 1}`;
+
     } else {
       const first = index + 1;
       const last = Math.min(index + 2, totalPages - 1);
@@ -55,79 +69,135 @@
     pageCount.textContent = `${totalPages} páginas`;
   }
 
+  // =====================================
+  // RENDERIZADO DE ALTA CALIDAD
+  // =====================================
+
   async function renderPDFPages(pdf) {
     const images = [];
 
-    for (let pageNumber = 1;
-         pageNumber <= pdf.numPages;
-         pageNumber++) {
+    for (
+      let pageNumber = 1;
+      pageNumber <= pdf.numPages;
+      pageNumber++
+    ) {
 
       loading.textContent =
         `Preparando tu libro... ${pageNumber} de ${pdf.numPages}`;
 
       const page = await pdf.getPage(pageNumber);
-      const baseViewport = page.getViewport({ scale: 1 });
 
-      const scale = Math.min(
+      const baseViewport = page.getViewport({
+        scale: 1
+      });
+
+      // Calcula una resolución alta manteniendo
+      // las proporciones originales del PDF.
+
+      const renderScale = Math.min(
         MAX_RENDER_WIDTH / baseViewport.width,
-        2
+        MAX_RENDER_HEIGHT / baseViewport.height
       );
 
-      const viewport = page.getViewport({ scale });
+      const viewport = page.getViewport({
+        scale: renderScale
+      });
+
       const outputScale = Math.min(
         window.devicePixelRatio || 1,
-        2
+        MAX_OUTPUT_SCALE
       );
 
       const canvas = document.createElement("canvas");
+
       const context = canvas.getContext("2d", {
         alpha: false
       });
 
       if (!context) {
-        throw new Error("No se pudo crear el contexto de dibujo.");
+        throw new Error(
+          "No se pudo crear el contexto de dibujo."
+        );
       }
 
-      canvas.width = Math.floor(viewport.width * outputScale);
-      canvas.height = Math.floor(viewport.height * outputScale);
+      canvas.width = Math.floor(
+        viewport.width * outputScale
+      );
+
+      canvas.height = Math.floor(
+        viewport.height * outputScale
+      );
 
       context.fillStyle = "#ffffff";
-      context.fillRect(0, 0, canvas.width, canvas.height);
+
+      context.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
 
       await page.render({
         canvasContext: context,
-        viewport,
+        viewport: viewport,
         transform: outputScale === 1
           ? null
-          : [outputScale, 0, 0, outputScale, 0, 0]
+          : [
+              outputScale,
+              0,
+              0,
+              outputScale,
+              0,
+              0
+            ]
       }).promise;
 
+      // Exportación JPEG de alta calidad.
+
       images.push(
-        canvas.toDataURL("image/jpeg", JPEG_QUALITY)
+        canvas.toDataURL(
+          "image/jpeg",
+          JPEG_QUALITY
+        )
       );
 
-      // Libera la memoria del canvas después de exportar.
+      // Liberación de memoria.
+
       canvas.width = 0;
       canvas.height = 0;
+
+      page.cleanup();
     }
 
     return images;
   }
 
+  // =====================================
+  // INICIALIZACIÓN DEL LIBRO
+  // =====================================
+
   async function initBook() {
     try {
+
       if (!window.pdfjsLib) {
-        throw new Error("No se pudo cargar PDF.js.");
+        throw new Error(
+          "No se pudo cargar PDF.js."
+        );
       }
 
       if (!window.St || !window.St.PageFlip) {
-        throw new Error("No se pudo cargar la biblioteca de animación.");
+        throw new Error(
+          "No se pudo cargar la biblioteca de animación."
+        );
       }
 
       pdfjsLib.GlobalWorkerOptions.workerSrc =
         "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-      const loadingTask = pdfjsLib.getDocument(PDF_URL);
+      const loadingTask = pdfjsLib.getDocument({
+        url: PDF_URL
+      });
+
       const pdf = await loadingTask.promise;
 
       totalPages = pdf.numPages;
@@ -139,24 +209,36 @@
       }
 
       const firstPage = await pdf.getPage(1);
-      const viewport = firstPage.getViewport({ scale: 1 });
 
-      // Dimensiones de cada página individual.
-      const pageWidth = 420;
+      const viewport = firstPage.getViewport({
+        scale: 1
+      });
+
+      // Tamaño de presentación de cada página.
+
+      const pageWidth = 600;
+
       const pageHeight = Math.round(
         pageWidth * viewport.height / viewport.width
       );
 
       const images = await renderPDFPages(pdf);
 
+      // =====================================
+      // PAGE FLIP
+      // =====================================
+
       pageFlip = new St.PageFlip(bookElement, {
+
         width: pageWidth,
         height: pageHeight,
 
         size: "stretch",
-        minWidth: 240,
+
+        minWidth: 280,
         maxWidth: pageWidth,
-        minHeight: 300,
+
+        minHeight: 350,
         maxHeight: Math.round(pageHeight * 1.1),
 
         autoSize: true,
@@ -166,14 +248,15 @@
 
         drawShadow: true,
         maxShadowOpacity: 0.18,
+
         flippingTime: 750,
 
         mobileScrollSupport: false,
         clickEventForward: true,
         useMouseEvents: true
+
       });
 
-      // La primera y la última imagen se muestran como tapas.
       pageFlip.loadFromImages(images);
 
       pageFlip.on("flip", updateControls);
@@ -186,15 +269,23 @@
       updateControls();
 
     } catch (error) {
-      console.error("Error al cargar el ebook:", error);
+
+      console.error(
+        "Error al cargar el ebook:",
+        error
+      );
 
       showError(
-        "No se pudo abrir el libro." +
-        "vuelve a intentarlo. " +
-        "Si el problema continúa, porfa mandame un correo."
+        "No se pudo abrir el libro. Comprueba que " +
+        PDF_URL +
+        " esté en la carpeta del proyecto y vuelve a intentarlo."
       );
     }
   }
+
+  // =====================================
+  // BOTONES
+  // =====================================
 
   prevButton.addEventListener("click", () => {
     pageFlip?.flipPrev();
@@ -205,4 +296,5 @@
   });
 
   initBook();
+
 })();
