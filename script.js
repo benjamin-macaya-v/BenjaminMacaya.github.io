@@ -645,5 +645,32 @@ if (!collage || !world || photos.length === 0) {
 
   updateWorld();
   animate();
+}
 
+// =====================================
+// COPIAR CORREO
+// =====================================
+
+async function copiarCorreo(event) {
+  event.preventDefault();
+
+  const correo = "benjamin.macaya.v@gmail.com";
+  const mensaje = document.getElementById("copy-message");
+
+  try {
+    await navigator.clipboard.writeText(correo);
+
+    if (mensaje) {
+      mensaje.classList.add("show");
+
+      clearTimeout(window.copyMessageTimer);
+
+      window.copyMessageTimer = setTimeout(() => {
+        mensaje.classList.remove("show");
+      }, 2000);
+    }
+
+  } catch (error) {
+    console.error("No se pudo copiar el correo:", error);
+  }
 }
